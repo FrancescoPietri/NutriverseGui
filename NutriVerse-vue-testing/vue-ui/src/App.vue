@@ -7,19 +7,44 @@ export default {
   data() {
     return {
       interacting: false,
-      IdCode : "ALDKSIFN",
-      interactionCode : "",
+      IdCode: "ALDKSIFN",
+      interactionCode: "",
       logged: false,
       typeAcc: 0
+    }
+  },
+  created() {
+    // Recupera i dati dal localStorage quando l'app viene creata
+    this.interacting = JSON.parse(localStorage.getItem('interacting')) || false;
+    this.IdCode = localStorage.getItem('IdCode') || "ALDKSIFN";
+    this.interactionCode = localStorage.getItem('interactionCode') || "";
+    this.logged = JSON.parse(localStorage.getItem('logged')) || false;
+    this.typeAcc = JSON.parse(localStorage.getItem('typeAcc')) || 0;
+  },
+  watch: {
+    interacting(newVal) {
+      localStorage.setItem('interacting', JSON.stringify(newVal));
+    },
+    IdCode(newVal) {
+      localStorage.setItem('IdCode', newVal);
+    },
+    interactionCode(newVal) {
+      localStorage.setItem('interactionCode', newVal);
+    },
+    logged(newVal) {
+      localStorage.setItem('logged', JSON.stringify(newVal));
+    },
+    typeAcc(newVal) {
+      localStorage.setItem('typeAcc', JSON.stringify(newVal));
     }
   },
   methods: {
     login(password) {
       this.logged = true;
-      if(password==="premium"){
+      if(password === "premium") {
         this.typeAcc = 1;
       }
-      if(password==="pro"){
+      if(password === "pro") {
         this.typeAcc = 2;
       }
     },
@@ -35,7 +60,11 @@ export default {
       this.interacting = false;
     }
   },
-  components: {InteractionDashboard, MainDashboard, InformationPage},
+  components: {
+    InteractionDashboard,
+    MainDashboard,
+    InformationPage
+  }
 }
 </script>
 
