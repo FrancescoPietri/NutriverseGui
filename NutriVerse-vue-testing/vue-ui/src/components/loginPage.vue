@@ -1,14 +1,39 @@
 <script>
+import axios from 'axios';
 export default {
   name: "loginPage",
   data() {
     return {
       signUp : false,
+      email: '',
       password: '',
-      retypePassword: ''
+      retypePassword: '',
+      auth_token: null
     }
   },
   methods: {
+     async getAuth() {
+       try {
+        const response = await axios.post('https://nutriverse.onrender.com/api/v1/auth',
+          {
+            email: this.email,
+            password: this.password
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        console.log(response.data);
+        if (response.status === 200) {
+          this.$emit("logged", this.password);
+        }
+      } catch (error) {
+        console.error('Error during authentication:', error);
+        // Gestione dell'errore
+      }
+    },
     signupRequest() {
       if(!this.signUp){
         this.signUp = true;
@@ -29,7 +54,9 @@ export default {
         if(this.signUp) {
           alert('Sign Up');
         }else {
-          this.$emit("logged", this.password);
+          this.email = document.getElementsByName('username')[0].value;
+          this.password = document.getElementsByName('password')[0].value;
+          this.getAuth();
         }
       }
     }
@@ -38,6 +65,7 @@ export default {
 </script>
 
 <template>
+
   <div id = "login_menu" :class="{ 'signupBackground': signUp, 'loginBackground': !signUp }">
         <div>
           <button @click="hidePage" id="closeButton" :class="{ 'closeSignupBG': signUp, 'closeLoginBG' : !signUp }">
