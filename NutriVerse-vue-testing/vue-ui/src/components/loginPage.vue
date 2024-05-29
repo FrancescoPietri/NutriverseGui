@@ -31,7 +31,6 @@ export default {
         }
         } catch (error) {
           console.error('Error during authentication:', error);
-          this.$emit("logged", this.password);
         }
     },
     signupRequest() {
