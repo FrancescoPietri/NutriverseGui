@@ -12,55 +12,69 @@ export default {
     }
   },
   methods: {
+    async function_query(method, uri, data) {
+      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
+        method: method,
+        headers: headers,
+        body: JSON.stringify(data),
+        cache: 'no-cache',
+      })
+      return await response.json()
+    },
+
     async function_login(email, password) {
-      try {
-        const response = await axios.post("https://nutriverse.onrender.com/api/v1/auth", { email, password });
-        return response.data;
-      } catch (error) {
-        throw new Error(error.response.data.message);
-      }
+      return await this.function_query("POST", "auth", { email, password })
     },
+
     async function_register(email, password) {
-      try {
-        const response = await axios.post("https://nutriverse.onrender.com/api/v1/user", { email, password });
-        return response.data;
-      } catch (error) {
-        throw new Error(error.response.data.message);
+      return await this.function_query("POST", "user", { email, password })
+    },
+
+    signupRequest() {
+      if (!this.signUp) {
+        this.signUp = true;
       }
     },
-    signupRequest() {
-      this.signUp = true;
-    },
+
     loginRequest() {
-      this.signUp = false;
+      if (this.signUp) {
+        this.signUp = false;
+      }
     },
+
     hidePage() {
       this.$emit("hideLogin");
     },
-    async submitForm() {
-  try {
-    if ((this.password !== this.retypePassword) && (this.signUp)) {
-      throw new Error('Password and Retype Password should match');
-    } else {
-      if (this.signUp) {
-        const response = await this.function_register(this.email, this.password);
-        if (response.status !== 200) {
-          throw new Error(`Registration failed with status code ${response.status}: ${response.data.message}`);
-        }
-        alert('User registered successfully');
+
+    submitForm() {
+      if ((this.password !== this.retypePassword) && (this.signUp)) {
+        alert('Password and Retype Password should match');
       } else {
-        const response = await this.function_login(this.email, this.password);
-        if (response.status !== 200) {
-          throw new Error(`Login failed with status code ${response.status}: ${response.data.message}`);
+        if (this.signUp) {
+          this.email = document.getElementsByName('username')[0].value;
+          this.password = document.getElementsByName('password')[0].value;
+          this.function_register(this.email, this.password)
+            .then(alert('User registered successfully'))
+        } else {
+          this.email = document.getElementsByName('username')[0].value;
+          this.password = document.getElementsByName('password')[0].value;
+          this.function_login(this.email, this.password)
+            .then(data => {
+              this.auth_token = data.token;
+              // Save token in a cookie
+              document.cookie = `auth_token=${data.token}; path=/`;
+            })
+          if (this.auth_token !== null) {
+            this.$emit("logged", this.password);
+          }
         }
-        localStorage.setItem('auth_token', response.data.token);
-        this.$emit("logged", this.password);
       }
     }
-  } catch (error) {
-    alert(error.message);
-  }
-}
   }
 }
 
