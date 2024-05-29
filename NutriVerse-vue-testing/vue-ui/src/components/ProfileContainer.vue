@@ -4,6 +4,14 @@ export default {
   props: {
     typeAcc: Number
   },
+  methods: {
+    logout() {
+      this.$emit("logout");
+    },
+    updateProfile() {
+      alert('Update Profile');
+    }
+  }
 }
 </script>
 

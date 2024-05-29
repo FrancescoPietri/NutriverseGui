@@ -166,7 +166,7 @@ export default {
   }
 
   #but_plus:hover{
-    background-color: black;
+    background-color: #93b650;
     cursor: pointer;
   }
 
