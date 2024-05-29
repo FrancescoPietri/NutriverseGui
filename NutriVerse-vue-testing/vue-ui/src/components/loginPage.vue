@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+
 export default {
   name: "loginPage",
   data() {
@@ -7,88 +8,53 @@ export default {
       signUp: false,
       email: '',
       password: '',
-      retypePassword: '',
-      auth_token: null
+      retypePassword: ''
     }
   },
   methods: {
-    async function_query(method, uri, data) {
-      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
-      const headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
-        method: method,
-        headers: headers,
-        body: JSON.stringify(data),
-        cache: 'no-cache',
-      })
-      return await response.json()
-    },
-
     async function_login(email, password) {
-      return await this.function_query("POST", "auth", { email, password })
+      try {
+        const response = await axios.post("https://nutriverse.onrender.com/api/v1/auth", { email, password });
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response.data.message);
+      }
     },
-
     async function_register(email, password) {
-      return await this.function_query("POST", "user", { email, password })
+      try {
+        const response = await axios.post("https://nutriverse.onrender.com/api/v1/user", { email, password });
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response.data.message);
+      }
     },
-
     signupRequest() {
-      if (!this.signUp) {
-        this.signUp = true;
-      }
+      this.signUp = true;
     },
-
     loginRequest() {
-      if (this.signUp) {
-        this.signUp = false;
-      }
+      this.signUp = false;
     },
-
     hidePage() {
       this.$emit("hideLogin");
     },
-
-    submitForm() {
-      if ((this.password !== this.retypePassword) && (this.signUp)) {
-        alert('Password and Retype Password should match');
-      } else {
-        if (this.signUp) {
-          this.email = document.getElementsByName('email')[0].value;
-          this.password = document.getElementsByName('password')[0].value;
-          this.function_register(this.email, this.password)
-            .then(response => {
-              if (response.status === 'success') {
-                alert('User registered successfully');
-              } else {
-                alert('Registration failed: ' + response.message);
-              }
-            })
-            .catch(error => {
-              alert('Error during registration: ' + error.message);
-            });
+    async submitForm() {
+      try {
+        if ((this.password !== this.retypePassword) && (this.signUp)) {
+          throw new Error('Password and Retype Password should match');
         } else {
-          this.email = document.getElementsByName('email')[0].value;
-          this.password = document.getElementsByName('password')[0].value;
-          this.function_login(this.email, this.password)
-            .then(response => {
-              if (response.status === 'success') {
-                // Save token in local storage or cookie
-                localStorage.setItem('auth_token', response.token);
-                this.$emit("logged", this.password);
-              } else {
-                alert('Login failed: ' + response.message);
-              }
-            })
-            .catch(error => {
-              alert('Error during login: ' + error.message);
-            });
+          if (this.signUp) {
+            const response = await this.function_register(this.email, this.password);
+            alert('User registered successfully');
+          } else {
+            const response = await this.function_login(this.email, this.password);
+            localStorage.setItem('auth_token', response.token);
+            this.$emit("logged", this.password);
+          }
         }
+      } catch (error) {
+        alert(error.message);
       }
     }
-
   }
 }
 
