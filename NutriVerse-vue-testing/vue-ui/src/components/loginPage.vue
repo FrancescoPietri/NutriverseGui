@@ -74,7 +74,7 @@ export default {
             document.cookie = `auth_token=${data.token}; path=/`;
             this.$emit("logged", password);
           } else {
-            alert('Login failed');
+            alert('Login failed: ' + (data && data.message ? data.message : 'Unknown error'));
           }
         }
       } catch (error) {
