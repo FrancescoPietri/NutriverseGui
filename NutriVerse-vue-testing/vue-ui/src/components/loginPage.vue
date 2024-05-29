@@ -58,7 +58,8 @@ export default {
         if (this.signUp) {
           this.email = document.getElementsByName('username')[0].value;
           this.password = document.getElementsByName('password')[0].value;
-          this.function_register(this.email, this.password);
+          this.function_register(this.email, this.password)
+              .then(alert('User registered successfully'))
         } else {
           this.email = document.getElementsByName('username')[0].value;
           this.password = document.getElementsByName('password')[0].value;

@@ -34,6 +34,25 @@ export default {
     }
   },
   methods: {
+    async function_query(method, uri) {
+      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      const headers = {
+        'auth-token': this.auth_token,
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
+        method: method,
+        headers: headers,
+        cache: 'no-cache',
+      })
+      return await response.json()
+    },
+
+    async function_data() {
+      return await this.function_query("GET", "user")
+    },
+
     logout() {
       this.$emit("logout");
     },
@@ -54,7 +73,10 @@ export default {
     },
     created() {
       this.auth_token = this.getCookie('auth_token');
-
+      this.function_data()
+          .then(data => {
+            console.log(data);
+          })
     },
     props: {
       typeAcc: Number,
