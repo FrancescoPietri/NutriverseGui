@@ -56,8 +56,8 @@ export default {
         alert('Password and Retype Password should match');
       } else {
         if (this.signUp) {
-          this.email = document.getElementsByName('username')[0].value;
-          this.password = document.getElementsByName('password')[0].value;
+          this.email = document.getElementsByName('email')[0].value;
+          this.password = document.getElementsByName('email')[0].value;
           this.function_register(this.email, this.password)
             .then(response => {
               if (response.status === 'success') {
@@ -70,11 +70,11 @@ export default {
               alert('Error during registration: ' + error.message);
             });
         } else {
-          this.email = document.getElementsByName('username')[0].value;
+          this.email = document.getElementsByName('email')[0].value;
           this.password = document.getElementsByName('password')[0].value;
           this.function_login(this.email, this.password)
             .then(response => {
-              if (response.status === 'success') {
+              if (response.status === '200') {
                 // Save token in local storage or cookie
                 localStorage.setItem('auth_token', response.token);
                 this.$emit("logged", this.password);
