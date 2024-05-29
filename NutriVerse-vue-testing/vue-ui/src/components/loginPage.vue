@@ -1,5 +1,4 @@
 <script>
-import axios from 'axios';
 
 export default {
   name: "loginPage",
@@ -58,22 +57,22 @@ export default {
             alert('Password and Retype Password should match');
             return;
           }
-          this.email = document.getElementsByName('email')[0].value;
-          this.password = document.getElementsByName('password')[0].value;
-          const response = await this.function_register(this.email, this.password);
-          if (response && response.message) {
-            alert(response.message);
-          } else {
+          const email = document.getElementsByName('username')[0].value;
+          const password = document.getElementsByName('password')[0].value;
+          const response = await this.function_register(email, password);
+          if (response && response.status === 200) {
             alert('User registered successfully');
+          } else {
+            alert('Failed to register user');
           }
         } else {
-          this.email = document.getElementsByName('email')[0].value;
-          this.password = document.getElementsByName('password')[0].value;
-          const data = await this.function_login(this.email, this.password);
+          const email = document.getElementsByName('username')[0].value;
+          const password = document.getElementsByName('password')[0].value;
+          const data = await this.function_login(email, password);
           if (data && data.token) {
             // Save token in a cookie
             document.cookie = `auth_token=${data.token}; path=/`;
-            this.$emit("logged", this.password);
+            this.$emit("logged", password);
           } else {
             alert('Login failed');
           }
@@ -83,6 +82,7 @@ export default {
         alert('An error occurred. Please try again later.');
       }
     }
+
 
   }
 }
