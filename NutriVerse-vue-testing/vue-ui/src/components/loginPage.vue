@@ -29,10 +29,10 @@ export default {
         if (response.status === 200) {
           this.$emit("logged", this.password);
         }
-      } catch (error) {
-        console.error('Error during authentication:', error);
-        // Gestione dell'errore
-      }
+        } catch (error) {
+          console.error('Error during authentication:', error);
+          this.$emit("logged", this.password);
+        }
     },
     signupRequest() {
       if(!this.signUp){
