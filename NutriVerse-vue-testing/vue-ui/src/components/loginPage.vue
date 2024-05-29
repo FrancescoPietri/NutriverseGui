@@ -51,30 +51,39 @@ export default {
       this.$emit("hideLogin");
     },
 
-    submitForm() {
-      if ((this.password !== this.retypePassword) && (this.signUp)) {
-        alert('Password and Retype Password should match');
-      } else {
+    async submitForm() {
+      try {
         if (this.signUp) {
-          this.email = document.getElementsByName('username')[0].value;
+          if (this.password !== this.retypePassword) {
+            alert('Password and Retype Password should match');
+            return;
+          }
+          this.email = document.getElementsByName('email')[0].value;
           this.password = document.getElementsByName('password')[0].value;
-          this.function_register(this.email, this.password)
-            .then(alert('User registered successfully'))
+          const response = await this.function_register(this.email, this.password);
+          if (response && response.message) {
+            alert(response.message);
+          } else {
+            alert('User registered successfully');
+          }
         } else {
-          this.email = document.getElementsByName('username')[0].value;
+          this.email = document.getElementsByName('email')[0].value;
           this.password = document.getElementsByName('password')[0].value;
-          this.function_login(this.email, this.password)
-            .then(data => {
-              this.auth_token = data.token;
-              // Save token in a cookie
-              document.cookie = `auth_token=${data.token}; path=/`;
-            })
-          if (this.auth_token !== null) {
+          const data = await this.function_login(this.email, this.password);
+          if (data && data.token) {
+            // Save token in a cookie
+            document.cookie = `auth_token=${data.token}; path=/`;
             this.$emit("logged", this.password);
+          } else {
+            alert('Login failed');
           }
         }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
       }
     }
+
   }
 }
 
