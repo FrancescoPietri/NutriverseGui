@@ -25,7 +25,7 @@ export default {
             }
           }
         );
-        console.log(response.data);
+        alert(response.data);
         if (response.status === 200) {
           this.$emit("logged", this.password);
         }
