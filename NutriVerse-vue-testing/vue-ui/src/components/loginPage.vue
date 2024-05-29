@@ -80,7 +80,7 @@ export default {
 
         <div id="div_form">
             <div class = "outer_fdiv">
-              <form id = "login_form">
+              <form id = "login_form" onsubmit="return false">
                   <input type="text" name="username" placeholder="Email" required>
                   <input type="password" name="password" placeholder="Password"  v-model="password" required>
                   <div style="display: flex;">
