@@ -57,7 +57,7 @@ export default {
       } else {
         if (this.signUp) {
           this.email = document.getElementsByName('email')[0].value;
-          this.password = document.getElementsByName('email')[0].value;
+          this.password = document.getElementsByName('password')[0].value;
           this.function_register(this.email, this.password)
             .then(response => {
               if (response.status === 'success') {
@@ -74,7 +74,7 @@ export default {
           this.password = document.getElementsByName('password')[0].value;
           this.function_login(this.email, this.password)
             .then(response => {
-              if (response.status === '200') {
+              if (response.status === 'success') {
                 // Save token in local storage or cookie
                 localStorage.setItem('auth_token', response.token);
                 this.$emit("logged", this.password);
