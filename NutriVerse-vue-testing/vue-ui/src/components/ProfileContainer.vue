@@ -81,6 +81,14 @@ export default {
       alert(response.message);
     }
   },
+  methods: {
+    logout() {
+      this.$emit("logout");
+    },
+    updateProfile() {
+      alert('Update Profile');
+    }
+  }
 }
 </script>
 
