@@ -78,7 +78,7 @@ export default {
           }
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         alert('An error occurred. Please try again later.');
       }
     }
