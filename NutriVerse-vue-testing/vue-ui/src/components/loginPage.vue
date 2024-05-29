@@ -38,23 +38,29 @@ export default {
       this.$emit("hideLogin");
     },
     async submitForm() {
-      try {
-        if ((this.password !== this.retypePassword) && (this.signUp)) {
-          throw new Error('Password and Retype Password should match');
-        } else {
-          if (this.signUp) {
-            const response = await this.function_register(this.email, this.password);
-            alert('User registered successfully');
-          } else {
-            const response = await this.function_login(this.email, this.password);
-            localStorage.setItem('auth_token', response.token);
-            this.$emit("logged", this.password);
-          }
+  try {
+    if ((this.password !== this.retypePassword) && (this.signUp)) {
+      throw new Error('Password and Retype Password should match');
+    } else {
+      if (this.signUp) {
+        const response = await this.function_register(this.email, this.password);
+        if (response.status !== 200) {
+          throw new Error(`Registration failed with status code ${response.status}: ${response.data.message}`);
         }
-      } catch (error) {
-        alert(error.message);
+        alert('User registered successfully');
+      } else {
+        const response = await this.function_login(this.email, this.password);
+        if (response.status !== 200) {
+          throw new Error(`Login failed with status code ${response.status}: ${response.data.message}`);
+        }
+        localStorage.setItem('auth_token', response.data.token);
+        this.$emit("logged", this.password);
       }
     }
+  } catch (error) {
+    alert(error.message);
+  }
+}
   }
 }
 
