@@ -13,26 +13,31 @@ export default {
   },
   methods: {
      async getAuth() {
-       try {
-        const response = await axios.post('https://nutriverse.onrender.com/api/v1/auth',
-          {
+      try {
+        const response = await fetch('https://nutriverse.onrender.com/api/v1/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
             email: this.email,
             password: this.password
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        alert(response.data);
+          })
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        alert(data);
         if (response.status === 200) {
           this.$emit("logged", this.password);
         }
         } catch (error) {
           console.error('Error during authentication:', error);
+          alert(`Authentication error: ${error.message}`);
         }
-    },
+      },
+
     signupRequest() {
       if(!this.signUp){
         this.signUp = true;
