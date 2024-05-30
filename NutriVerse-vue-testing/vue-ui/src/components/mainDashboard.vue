@@ -4,41 +4,57 @@ import ProfileContainer from "@/components/ProfileContainer.vue";
 
 export default {
   name: "mainDashboard",
-  components: {ProfileContainer, CardProfile},
+  components: { ProfileContainer, CardProfile },
   data() {
     return {
+      auth_token: null,
       professionist: [
-          {name: "patrick", code: "AAAAAAAA", typeP: "N"},
-          {name: "tester", code: "AGCDEFGHI", typeP: "PT"},
-          {name: "tester", code: "ASCDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "AACDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABGDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCHEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABADEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCDHFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCEEFGHI", typeP: "PT/N"},
+        { name: "patrick", code: "AAAAAAAA", typeP: "N" },
+        { name: "tester", code: "AGCDEFGHI", typeP: "PT" },
+        { name: "tester", code: "ASCDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "AACDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABGDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCHEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABADEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCDHFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCEEFGHI", typeP: "PT/N" },
       ],
 
       patiets: [
-          {name: "gennaro", code: "AAAAAAAA", typeP: "N"},
-          {name: "tester", code: "AGCDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ASCDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "AACDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABGDEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCHEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABADEFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCDHFGHI", typeP: "PT/N"},
-          {name: "tester", code: "ABCEEFGHI", typeP: "PT/N"},
+        { name: "gennaro", code: "AAAAAAAA", typeP: "N" },
+        { name: "tester", code: "AGCDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ASCDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "AACDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABGDEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCHEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABADEFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCDHFGHI", typeP: "PT/N" },
+        { name: "tester", code: "ABCEEFGHI", typeP: "PT/N" },
       ]
-
     }
   },
   methods: {
+    async function_query(method, uri) {
+      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      const headers = {
+        'auth-token': this.auth_token,
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
+        method: method,
+        headers: headers,
+        cache: 'no-cache',
+      })
+      return await response.json()
+    },
+
+    async function_data() {
+      return await this.function_query("GET", "user")
+    },
+
     logout() {
       this.$emit("logout");
-    },
-    updateProfile() {
-      alert('Update Profile');
     },
     removeSubscription(code) {
       this.professionist = this.professionist.filter(pro => pro.code !== code);
@@ -48,14 +64,27 @@ export default {
     },
     openInteractionDashboard(code) {
       this.$emit("openInteractionDashboard", code);
+    },
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
     }
-  },
-  props: {
-    typeAcc: Number,
-    IdCode: String
-  }
+    },
+    created() {
+      this.auth_token = this.getCookie('auth_token');
+      this.function_data()
+          .then(data => {
+            console.log(data);
+          })
+    },
+    props: {
+      typeAcc: Number,
+      IdCode: String
+    }
 }
 </script>
+
 
 <template>
   <div id="out_containter">
