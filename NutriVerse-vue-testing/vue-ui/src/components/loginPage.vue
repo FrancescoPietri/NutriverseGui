@@ -51,39 +51,37 @@ export default {
     },
 
     async submitForm() {
+      document.getElementsByName('send_b')[0].attributes.setNamedItem(document.createAttribute('disabled'));
       try {
         if (this.signUp) {
           if (this.password !== this.retypePassword) {
             alert('Password and Retype Password should match');
+            document.getElementsByName('send_b')[0].attributes.removeNamedItem('disabled');
             return;
           }
           const email = document.getElementsByName('username')[0].value;
           const password = document.getElementsByName('password')[0].value;
           const response = await this.function_register(email, password);
-          if (response && response.status === 200) {
-            alert('User registered successfully');
-          } else {
-            alert('Failed to register user');
+          if (response!=="") {
+            alert(response.message);
           }
         } else {
           const email = document.getElementsByName('username')[0].value;
           const password = document.getElementsByName('password')[0].value;
           const data = await this.function_login(email, password);
           if (data && data.token) {
-            // Save token in a cookie
             document.cookie = `auth_token=${data.token}; path=/`;
             this.$emit("logged", password);
           } else {
-            alert('Login failed: ' + (data && data.message ? data.message : 'Unknown error'));
+            alert('Login failed');
           }
         }
       } catch (error) {
         console.log('Error:', error);
         alert('An error occurred. Please try again later.');
       }
+      document.getElementsByName('send_b')[0].attributes.removeNamedItem('disabled');
     }
-
-
   }
 }
 
@@ -116,7 +114,7 @@ export default {
                 required>
             </transition>
           </div>
-          <button :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="submitForm">Send</button>
+          <button  name="send_b" :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="submitForm">Send</button>
         </form>
       </div>
       <div class="outer_fdiv">
@@ -269,6 +267,16 @@ export default {
 
 .lmenuButton:hover {
   background-color: #80b663;
+  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
+}
+
+.lmenuButton:disabled {
+  background-color: #910018;
+  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
+}
+
+.smenuButton:disabled {
+  background-color: #910018;
   /* Cambia il colore di sfondo del bottone al passaggio del mouse */
 }
 
