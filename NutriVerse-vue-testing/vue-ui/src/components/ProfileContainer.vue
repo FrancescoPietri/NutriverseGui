@@ -2,7 +2,14 @@
 export default {
   name: "ProfileContainer",
   props: {
-    typeAcc: Number
+    typeAcc: Number,
+    userN: "",
+    weight: "",
+    height: "",
+    age: Number,
+    gender: "",
+    prof : "",
+    email : "",
   },
   methods: {
     logout() {
@@ -11,7 +18,7 @@ export default {
     updateProfile() {
       alert('Update Profile');
     }
-  }
+  },
 }
 </script>
 
@@ -31,7 +38,7 @@ export default {
         </div>
 
         <div id="radio_buttons" v-if="typeAcc===2">
-          <input type="radio" id="radio_N" name="account_type">
+          <input type="radio" id="radio_N" name="account_type" :checked="prof === 'Nutritionist'">
           <label for="radio_basic">N</label><br>
           <input type="radio" id="radio_PT" name="account_type">
           <label for="radio_pro">PT</label><br>
@@ -50,11 +57,11 @@ export default {
             <div id="div_input_form">
               <div class="div_inner_form">
                 <h2 class="h2_form">Name: </h2>
-                <input class="input_form" type="text" name="name" placeholder="Name">
+                <input class="input_form" type="text" name="name" :placeholder=userN>
               </div>
               <div class="div_inner_form">
-                <h2 class="h2_form">Surname: </h2>
-                <input class="input_form" type="text" name="surname" placeholder="Surname">
+                <h2 class="h2_form">Email: </h2>
+                <input class="input_form" type="text" name="email" :placeholder=email>
               </div>
               <div class="div_inner_form">
                 <h2 class="h2_form">Status: </h2>
@@ -66,16 +73,16 @@ export default {
               <div id="div_downForm">
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Weight: </h2>
-                  <input class="input_form_down" style="width: 20%"  type="text" name="Weight" placeholder="Weight">
+                  <input class="input_form_down" style="width: 20%"  type="text" name="Weight" :placeholder=weight>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw" >Height: </h2>
-                  <input class="input_form_down" style="width: 20%" type="text" name="Height" placeholder="Height">
+                  <input class="input_form_down" style="width: 20%" type="text" name="Height" :placeholder=height>
                 </div>
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Age: </h2>
-                  <input class="input_form_down" style="width: 20%" type="text" name="Age" placeholder="Age">
+                  <input class="input_form_down" style="width: 20%" type="text" name="Age" :placeholder=age>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw">Gender: </h2>
                   <select class="input_form_down" style="width: 21.5%" name="Gender">
-                    <option value="" disabled selected>Gender</option>
+                    <option value="" disabled selected >{{gender}}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
