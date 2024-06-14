@@ -7,6 +7,14 @@ export default {
   components: { ProfileContainer, CardProfile },
   data() {
     return {
+      userN: "",
+      weight: "",
+      height: "",
+      age: Number,
+      gender: "",
+      prof : "",
+      typeAcc: Number,
+      email: "",
       auth_token: null,
       professionist: [
         { name: "patrick", code: "AAAAAAAA", typeP: "N" },
@@ -75,11 +83,25 @@ export default {
       this.auth_token = this.getCookie('auth_token');
       this.function_data()
           .then(data => {
-            console.log(data);
+            this.userN = data.name;
+            this.height = data.height;
+            this.age = data.age;
+            this.gender = data.gender;
+            this.email = data.email;
+            this.weight = data.weight[0].value;
+            if (data.userType==="ProUser"){
+              if (data.Profession !== ""){
+                this.prof = data.Profession
+                this.typeAcc = 2;
+              }else{
+                this.typeAcc = 1;
+              }
+            }else{
+              this.typeAcc = 0;
+            }
           })
     },
     props: {
-      typeAcc: Number,
       IdCode: String
     }
 }
@@ -88,7 +110,7 @@ export default {
 
 <template>
   <div id="out_containter">
-    <profile-container :typeAcc="typeAcc" @logout="logout"/>
+    <profile-container :email="email" :typeAcc="typeAcc" :user-n="userN" :age="age" :gender="gender" :height="height" :weight="weight" :prof="prof" @logout="logout"/>
     <div id="div_profile_space"></div>
 
     <div :class="{ 'div_subscriptions': typeAcc===0 || typeAcc===1, 'div_subscriptions_pro' : typeAcc===2 }">

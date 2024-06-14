@@ -70,7 +70,9 @@ export default {
           const password = document.getElementsByName('password')[0].value;
           const data = await this.function_login(email, password);
           if (data && data.token) {
-            document.cookie = `auth_token=${data.token}; path=/`;
+            let expires = new Date();
+            expires.setTime(expires.getTime() + 3600 * 1000);
+            document.cookie = `auth_token=${data.token}; expires=${expires.toUTCString()}; path=/`;
             this.$emit("logged", password);
           } else {
             alert('Login failed');

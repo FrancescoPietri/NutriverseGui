@@ -10,7 +10,6 @@ export default {
       IdCode: "ALDKSIFN",
       interactionCode: "",
       logged: false,
-      typeAcc: 0
     }
   },
   created() {
@@ -19,7 +18,6 @@ export default {
     this.IdCode = localStorage.getItem('IdCode') || "ALDKSIFN";
     this.interactionCode = localStorage.getItem('interactionCode') || "";
     this.logged = JSON.parse(localStorage.getItem('logged')) || false;
-    this.typeAcc = JSON.parse(localStorage.getItem('typeAcc')) || 0;
   },
   watch: {
     interacting(newVal) {
@@ -34,23 +32,14 @@ export default {
     logged(newVal) {
       localStorage.setItem('logged', JSON.stringify(newVal));
     },
-    typeAcc(newVal) {
-      localStorage.setItem('typeAcc', JSON.stringify(newVal));
-    }
   },
   methods: {
-    login(password) {
+    login() {
       this.logged = true;
-      if(password === "premium") {
-        this.typeAcc = 1;
-      }
-      if(password === "pro") {
-        this.typeAcc = 2;
-      }
     },
     logout() {
-      this.typeAcc = 0;
       this.logged = false;
+      document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     },
     openInteractionDashboard(code) {
       this.interacting = true;
@@ -70,7 +59,7 @@ export default {
 
 <template>
   <information-page v-if="!logged" @logged="login"/>
-  <main-dashboard v-if="logged && !interacting" @logout="logout" @openInteractionDashboard="openInteractionDashboard" :type-acc="typeAcc" :id-code="IdCode"/>
+  <main-dashboard v-if="logged && !interacting" @logout="logout" @openInteractionDashboard="openInteractionDashboard" :id-code="IdCode"/>
   <interaction-dashboard v-if="interacting" :IdCode="IdCode" :interactionCode="interactionCode" @back="exitInteraction"/>
 </template>
 
