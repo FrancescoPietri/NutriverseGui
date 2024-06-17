@@ -82,22 +82,27 @@ export default {
     created() {
       this.auth_token = this.getCookie('auth_token');
       this.function_data()
-          .then(data => {
-            this.userN = data.name;
-            this.height = data.height;
-            this.age = data.age;
-            this.gender = data.gender;
-            this.email = data.email;
-            this.weight = data.weight[0].value;
-            if (data.userType==="ProUser"){
-              if (data.Profession !== ""){
-                this.prof = data.Profession
-                this.typeAcc = 2;
+          .then(json => {
+            if (json.status===200){
+              const data=json.user;
+              this.userN = data.name;
+              this.height = data.height;
+              this.age = data.age;
+              this.gender = data.gender;
+              this.email = data.email;
+              this.weight = data.weight[0].value;
+              if (data.userType==="ProUser"){
+                if (data.Profession !== ""){
+                  this.prof = data.Profession
+                  this.typeAcc = 2;
+                }else{
+                  this.typeAcc = 1;
+                }
               }else{
-                this.typeAcc = 1;
+                this.typeAcc = 0;
               }
             }else{
-              this.typeAcc = 0;
+              alert("error:" + json.status)
             }
           })
     },
