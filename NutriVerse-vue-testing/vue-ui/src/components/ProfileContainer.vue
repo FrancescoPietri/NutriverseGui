@@ -1,22 +1,72 @@
 <script>
 export default {
   name: "ProfileContainer",
+  data() {
+    return {
+      auth_token : "",
+      nameU: this.userN,
+      weightU: this.weight,
+      heightU: this.height,
+      ageU: this.age,
+      professionU: this.prof,
+    }
+  },
   props: {
-    typeAcc: Number,
+    typeAcc: "",
     userN: "",
     weight: "",
     height: "",
-    age: Number,
+    age: "",
     gender: "",
     prof : "",
     email : "",
   },
   methods: {
+    async function_query(method, uri, data) {
+      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      const headers = {
+        'auth-token': this.auth_token,
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
+        method: method,
+        headers: headers,
+        body: JSON.stringify(data),
+        cache: 'no-cache',
+      })
+      return await response.json()
+    },
+
+    async function_update(name, weight, age, height, profession) {
+      return await this.function_query("PUT", "user", { name, weight, age, height, profession })
+    },
+
+
     logout() {
       this.$emit("logout");
     },
-    updateProfile() {
-      alert('Update Profile');
+
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    },
+
+    async updateProfile() {
+      this.auth_token = this.getCookie('auth_token');
+      var profession;
+      if((document.getElementById("radio_N").checked || document.getElementById("radio_PT").checked) && this.typeAcc===2){
+        if(document.getElementById("radio_N").checked){
+          profession = "Nutritionist";
+        }else{
+          profession = "Personal Trainer";
+        }
+      }else{
+        profession = this.prof
+      }
+      const response = await this.function_update(this.nameU, this.weightU, this.ageU, this.heightU, profession);
+      alert(response.message);
     }
   },
 }
@@ -40,28 +90,26 @@ export default {
         <div id="radio_buttons" v-if="typeAcc===2">
           <input type="radio" id="radio_N" name="account_type" :checked="prof === 'Nutritionist'">
           <label for="radio_basic">N</label><br>
-          <input type="radio" id="radio_PT" name="account_type">
+          <input type="radio" id="radio_PT" name="account_type" :checked="prof === 'Personal Trainer'">
           <label for="radio_pro">PT</label><br>
-          <input type="radio" id="radio_A" name="account_type">
-          <label for="radio_work">N/PT</label><br>
         </div>
 
       </div>
       <div id="div_personal_information">
         <div>
+          <div id="div_upForm">
+            <h2 id="h2_profile">Profile:</h2>
+            <button id="but_pi" :class="{ 'but_pi_basic': typeAcc===0, 'but_pi_pro' : typeAcc===1 , 'but_pi_work' : typeAcc===2}" @click="updateProfile" >UPDATE</button>
+          </div>
           <form>
-            <div id="div_upForm">
-              <h2 id="h2_profile">Profile:</h2>
-              <button id="but_pi" :class="{ 'but_pi_basic': typeAcc===0, 'but_pi_pro' : typeAcc===1 , 'but_pi_work' : typeAcc===2}" @click="updateProfile" >UPDATE</button>
-            </div>
             <div id="div_input_form">
               <div class="div_inner_form">
                 <h2 class="h2_form">Name: </h2>
-                <input class="input_form" type="text" name="name" :placeholder=userN>
+                <input class="input_form" type="text" name="name"  v-model="nameU" :placeholder=userN>
               </div>
               <div class="div_inner_form">
                 <h2 class="h2_form">Email: </h2>
-                <input class="input_form" type="text" name="email" :placeholder=email>
+                <input class="input_form" type="text" name="email" :placeholder=email disabled>
               </div>
               <div class="div_inner_form">
                 <h2 class="h2_form">Status: </h2>
@@ -73,15 +121,15 @@ export default {
               <div id="div_downForm">
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Weight: </h2>
-                  <input class="input_form_down" style="width: 20%"  type="text" name="Weight" :placeholder=weight>
+                  <input class="input_form_down" style="width: 20%"  type="Number" v-model="weightU"  name="Weight" :placeholder=weight>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw" >Height: </h2>
-                  <input class="input_form_down" style="width: 20%" type="text" name="Height" :placeholder=height>
+                  <input class="input_form_down" style="width: 20%" type="Number" v-model="heightU" name="Height" :placeholder=height>
                 </div>
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Age: </h2>
-                  <input class="input_form_down" style="width: 20%" type="text" name="Age" :placeholder=age>
+                  <input class="input_form_down" style="width: 20%" type="Number" v-model="ageU" name="Age" :placeholder=age>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw">Gender: </h2>
-                  <select class="input_form_down" style="width: 21.5%" name="Gender">
+                  <select class="input_form_down" style="width: 21.5%" name="Gender" disabled>
                     <option value="" disabled selected >{{gender}}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
