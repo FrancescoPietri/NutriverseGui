@@ -35,6 +35,7 @@ export default {
   created() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
+    alert(token)
     if (token) {
       this.authToken = token;
       localStorage.setItem('authToken', token);
