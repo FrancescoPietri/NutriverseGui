@@ -2,10 +2,11 @@
 import CardProfile from "@/components/cardProfile.vue";
 import ProfileContainer from "@/components/ProfileContainer.vue";
 import CardProfileReq from "@/components/cardProfileReq.vue";
+import insertEmail from "@/components/insertEmail.vue";
 
 export default {
   name: "mainDashboard",
-  components: { ProfileContainer, CardProfile, CardProfileReq },
+  components: { ProfileContainer, CardProfile, CardProfileReq, insertEmail },
   data() {
     return {
       addSubr: "",
@@ -133,8 +134,9 @@ export default {
                 this.function_subscriber()
                     .then(json => {
                       if (json.status === 200) {
-                        for (tmp in json.subscribers.subscribers) {
-                          this.patiets.push(json.subscribers.subscribers[tmp])
+                        console.log(json)
+                        for (tmp in json.subscribers) {
+                          this.patiets.push(json.subscribers[tmp])
                         }
                         for (tmp in json.requests) {
                           this.requestsSub.push(json.requests[tmp])
@@ -189,6 +191,9 @@ export default {
     </div>
 
     <div id="div_button_menu">
+        <div id="insEmail">
+         <insert-email></insert-email>
+        </div>
         <button class="maindash_button" id="but_money" v-if="typeAcc!==0">
           <img alt="Error" src="@/assets/catIcon.png" style="width: 80%; height: 80%">
         </button>
@@ -199,7 +204,7 @@ export default {
         <button class="maindash_button" id="but_report">
           <img alt="Error" src="@/assets/reportIcon.png" style="width: 80%; height: 80%">
         </button>
-        <input v-model="addSubr">
+       <input v-model="addSubr">
         <button class="maindash_button" id="but_plus" @click="sendSubRequest">
           <img alt="Error" src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
         </button>
@@ -209,6 +214,12 @@ export default {
 </template>
 
 <style scoped>
+
+  #insEmail{
+    position: relative;
+    left: +30%;
+    margin-bottom: 4vh;
+  }
 
   #div_profile_space{
     width: 30vw;

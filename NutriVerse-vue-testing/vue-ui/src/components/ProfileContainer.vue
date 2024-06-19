@@ -129,7 +129,7 @@ export default {
                   <h2 class="h2_form_down" style="width: 20%">Age: </h2>
                   <input class="input_form_down" style="width: 20%" type="Number" v-model="ageU" name="Age" :placeholder=age>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw">Gender: </h2>
-                  <select class="input_form_down" style="width: 21.5%" name="Gender" disabled>
+                  <select class="input_form_down" style="width: 21.5%" name="Gender">
                     <option value="" disabled selected >{{gender}}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
