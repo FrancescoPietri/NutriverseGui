@@ -7,37 +7,20 @@ export default {
   components: { ProfileContainer, CardProfile },
   data() {
     return {
+      addSubr: "",
       userN: "",
       weight: "",
       height: "",
       age: Number,
       gender: "",
       prof : "",
-      typeAcc: Number,
+      typeAcc: 4,
       email: "",
       auth_token: null,
       professionist: [
-        { name: "patrick", code: "AAAAAAAA", typeP: "N" },
-        { name: "tester", code: "AGCDEFGHI", typeP: "PT" },
-        { name: "tester", code: "ASCDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "AACDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABGDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCHEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABADEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCDHFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCEEFGHI", typeP: "PT/N" },
       ],
 
       patiets: [
-        { name: "gennaro", code: "AAAAAAAA", typeP: "N" },
-        { name: "tester", code: "AGCDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ASCDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "AACDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABGDEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCHEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABADEFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCDHFGHI", typeP: "PT/N" },
-        { name: "tester", code: "ABCEEFGHI", typeP: "PT/N" },
       ]
     }
   },
@@ -59,6 +42,14 @@ export default {
 
     async function_data() {
       return await this.function_query("GET", "user")
+    },
+
+    async function_subscription() {
+      return await this.function_query("GET", "subscription")
+    },
+
+    async function_subscriber() {
+      return await this.function_query("GET", "prouser")
     },
 
     logout() {
@@ -90,7 +81,9 @@ export default {
               this.age = data.age;
               this.gender = data.gender;
               this.email = data.email;
-              this.weight = data.weight[0].value;
+              if(data.weight.length>0){
+                this.weight = data.weight[0].value;
+              }
               if (data.userType==="ProUser"){
                 if (data.Profession !== ""){
                   this.prof = data.Profession
@@ -100,6 +93,25 @@ export default {
                 }
               }else{
                 this.typeAcc = 0;
+              }
+              var tmp =0;
+              this.function_subscription()
+                  .then(json =>{
+                    if(json.status===200){
+                      for (tmp in json.subscriptions.subscriptions){
+                        this.professionist.push(json.subscriptions.subscriptions[tmp])
+                      }
+                    }
+                  })
+              if(this.typeAcc===2) {
+                this.function_subscriber()
+                    .then(json => {
+                      if (json.status === 200) {
+                        for (tmp in json.subscribers.subscribers) {
+                          this.patiets.push(json.subscribers.subscribers[tmp])
+                        }
+                      }
+                    })
               }
             }else{
               alert("error:" + json.status)
@@ -126,7 +138,7 @@ export default {
       </div>
         <div id="div_info_card">
             <div v-for="pro in professionist" :key="pro.code" class="card_div">
-                <cardProfile :name-p="pro.name" :code="pro.code" :type-p="pro.typeP" @removeSub="removeSubscription" @openInteractionDashboard="openInteractionDashboard"/>
+                <cardProfile :name-p="pro.name" :code="pro.index" :type-p="pro.profession" @removeSub="removeSubscription" @openInteractionDashboard="openInteractionDashboard"/>
             </div>
         </div>
     </div>
@@ -134,12 +146,12 @@ export default {
     <div id="div_subscriber" v-if="typeAcc===2">
       <div style="height: 8vh">
         <div id="h1_subscriptions_div">
-            <h1 id="h1_subscriptions">Subscriber:</h1>
+            <h1 id="h1_subscriptions">Subscribers:</h1>
         </div>
       </div>
       <div id="div_info_card">
           <div v-for="pro in patiets" :key="pro.code" class="card_div">
-              <cardProfile :name-p="pro.name" :code="pro.code" :type-p="pro.typeP" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
+              <cardProfile :name-p="pro.name" :code="pro.index" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
           </div>
       </div>
     </div>
@@ -155,6 +167,7 @@ export default {
         <button class="maindash_button" id="but_report">
           <img alt="Error" src="@/assets/reportIcon.png" style="width: 80%; height: 80%">
         </button>
+        <input v-model="addSubr">
         <button class="maindash_button" id="but_plus">
           <img alt="Error" src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
         </button>

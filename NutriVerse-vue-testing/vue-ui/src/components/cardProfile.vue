@@ -28,7 +28,7 @@ export default {
       </div>
       <div id="div_info_card">
         <div class="show_info">
-          <h2 class="h2_card"> Code: {{ code }}</h2>
+          <h2 class="h2_card" style="font-family: verdana"> Code: {{ code }}</h2>
         </div>
         <div class="show_info">
           <h2 class="h2_card"> Name: {{nameP}}</h2>
