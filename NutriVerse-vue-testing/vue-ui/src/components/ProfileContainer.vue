@@ -56,14 +56,14 @@ export default {
     async updateProfile() {
       this.auth_token = this.getCookie('auth_token');
       var profession;
-      if((document.getElementById("radio_N").checked || document.getElementById("radio_PT").checked) && this.typeAcc===2){
-        if(document.getElementById("radio_N").checked){
-          profession = "Nutritionist";
-        }else{
-          profession = "Personal Trainer";
+      if(this.typeAcc===2) {
+        if ((document.getElementById("radio_N").checked || document.getElementById("radio_PT").checked) && this.typeAcc === 2) {
+          if (document.getElementById("radio_N").checked) {
+            profession = "Nutritionist";
+          } else {
+            profession = "Personal Trainer";
+          }
         }
-      }else{
-        profession = this.prof
       }
       const response = await this.function_update(this.nameU, this.weightU, this.ageU, this.heightU, profession);
       alert(response.message);
@@ -136,10 +136,6 @@ export default {
                     <option value="other">Other</option>
                   </select>
                 </div>
-                  <div class="div_inner_form">
-                    <h2 class="h2_form">Description: </h2>
-                    <textarea id="form_textarea"></textarea>
-                  </div>
               </div>
             </div>
           </form>
@@ -232,7 +228,7 @@ export default {
   }
 
   #div_personal_information{
-
+    margin-top: 6vh;
     margin-left: 2vw;
     margin-right: 1vw;
     width: 100%;
