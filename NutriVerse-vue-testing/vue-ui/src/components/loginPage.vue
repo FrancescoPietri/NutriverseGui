@@ -26,6 +26,7 @@ export default {
       return await response.json()
     },
 
+
     async function_login(email, password) {
       return await this.function_query("POST", "auth", { email, password })
     },
