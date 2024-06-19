@@ -1,10 +1,11 @@
 <script>
 import CardProfile from "@/components/cardProfile.vue";
 import ProfileContainer from "@/components/ProfileContainer.vue";
+import CardProfileReq from "@/components/cardProfileReq.vue";
 
 export default {
   name: "mainDashboard",
-  components: { ProfileContainer, CardProfile },
+  components: { ProfileContainer, CardProfile, CardProfileReq },
   data() {
     return {
       addSubr: "",
@@ -19,9 +20,10 @@ export default {
       auth_token: null,
       professionist: [
       ],
-
       patiets: [
-      ]
+      ],
+      requestsSub: [
+      ],
     }
   },
   methods: {
@@ -40,6 +42,22 @@ export default {
       return await response.json()
     },
 
+    async function_query_post(method, uri, data) {
+      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      const headers = {
+        'auth-token': this.auth_token,
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
+        method: method,
+        headers: headers,
+        body: JSON.stringify(data),
+        cache: 'no-cache',
+      })
+      return await response.json()
+    },
+
     async function_data() {
       return await this.function_query("GET", "user")
     },
@@ -50,6 +68,10 @@ export default {
 
     async function_subscriber() {
       return await this.function_query("GET", "prouser")
+    },
+
+    async function_addSubReq( email ) {
+      return await this.function_query_post("POST", "subscription", { email })
     },
 
     logout() {
@@ -68,7 +90,11 @@ export default {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
+    },
+    sendSubRequest(){
+      this.function_addSubReq(this.addSubr);
     }
+
     },
     created() {
       this.auth_token = this.getCookie('auth_token');
@@ -110,6 +136,9 @@ export default {
                         for (tmp in json.subscribers.subscribers) {
                           this.patiets.push(json.subscribers.subscribers[tmp])
                         }
+                        for (tmp in json.requests) {
+                          this.requestsSub.push(json.requests[tmp])
+                        }
                       }
                     })
               }
@@ -138,7 +167,7 @@ export default {
       </div>
         <div id="div_info_card">
             <div v-for="pro in professionist" :key="pro.code" class="card_div">
-                <cardProfile :name-p="pro.name" :code="pro.index" :type-p="pro.profession" @removeSub="removeSubscription" @openInteractionDashboard="openInteractionDashboard"/>
+                <cardProfile :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscription" @openInteractionDashboard="openInteractionDashboard"/>
             </div>
         </div>
     </div>
@@ -151,7 +180,10 @@ export default {
       </div>
       <div id="div_info_card">
           <div v-for="pro in patiets" :key="pro.code" class="card_div">
-              <cardProfile :name-p="pro.name" :code="pro.index" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
+              <cardProfile  :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
+          </div>
+          <div v-for="pro in requestsSub" :key="pro.email" class="card_div">
+            <cardProfileReq :email="pro.email" :auth_token="auth_token"/>
           </div>
       </div>
     </div>
@@ -168,7 +200,7 @@ export default {
           <img alt="Error" src="@/assets/reportIcon.png" style="width: 80%; height: 80%">
         </button>
         <input v-model="addSubr">
-        <button class="maindash_button" id="but_plus">
+        <button class="maindash_button" id="but_plus" @click="sendSubRequest">
           <img alt="Error" src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
         </button>
       </div>

@@ -1,14 +1,13 @@
 <script>
+
 export default {
   name: "cardProfile",
   props: {
     email: String,
-    nameP: String,
-    typeP: String,
-    auth_token: String,
+    auth_token : "",
   },
   methods: {
-    async function_query_post(method, uri) {
+    async function_query_post(method, uri, data) {
       console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
       const headers = {
         'auth-token': this.auth_token,
@@ -18,43 +17,39 @@ export default {
       const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
         method: method,
         headers: headers,
+        body: JSON.stringify(data),
         cache: 'no-cache',
       })
       return await response.json()
     },
 
-    async function_remove(email) {
-      return await this.function_query_post("DELETE", `subscription/${email}`)
+    async function_accept(acceptEmail, ADRequest) {
+      return await this.function_query_post("PUT", `subscription`, {acceptEmail, ADRequest})
     },
-
-    removeSub() {
-      this.function_remove(this.email);
+    acceptRequest(){
+      this.function_accept(this.email, true);
     },
-    openInteractionDashboard() {
-      this.$emit("openInteractionDashboard", this.code);
+    refuseRequest(){
+      this.function_accept(this.email, false);
     }
   }
 }
 </script>
 
 <template>
-  <button class="button_card_profile" @click="openInteractionDashboard" disabled>
+  <button class="button_card_profile">
     <div id="container_card">
-      <button class="close_button" @click="removeSub">
-        <img src="@/assets/closeButton.png" style="width: 100%; height: 100%"/>
-      </button>
+      <h2>New Request!</h2>
       <div id="div_card_pic">
         <img src="@/assets/defaultPIC.png" />
       </div>
       <div id="div_info_card">
         <div class="show_info">
-          <h2 class="h2_card" > Email: {{ email }}</h2>
+          <h2 class="h2_card" style="font-family: verdana"> email: {{ email }}</h2>
         </div>
-        <div class="show_info">
-          <h2 class="h2_card"> Name: {{nameP}}</h2>
-        </div>
-        <div class="show_info">
-          <h2 class="h2_card"> Status: {{typeP}}</h2>
+        <div>
+          <button class="selReq" @click="acceptRequest">Yes</button>
+          <button class="selReq" @click="refuseRequest">No</button>
         </div>
       </div>
     </div>
@@ -85,7 +80,7 @@ export default {
   }
 
   #div_info_card {
-    margin-top: 3vh;
+    margin-top: 2vh;
     display: flex;
     flex-direction: column;
     align-items: center; /* Per centrare verticalmente */
@@ -98,7 +93,7 @@ export default {
   }
 
   .h2_card {
-    font-family: verdana;
+    font-family: 'Stinger Fit Trial', sans-serif;
     font-size: 16px;
   }
 
@@ -108,7 +103,7 @@ export default {
     width: 100%;
     height: 20vh;
     border-radius: 50%;
-    margin-top: -2vh;
+    margin-top: -1vh;
     align-items: center;
     justify-content: center;
   }
@@ -126,15 +121,11 @@ export default {
       height: 100%;
       margin-top: 5vh;
       margin-left: 2vw;
-      background-color: #4d8330;
+      background-color: #9064e4;
       border: 1px solid black;
       align-items: center; /* Per centrare verticalmente */
       justify-content: center; /* Per centrare orizzontalmente */
       transition: background-color 0.3s ease;
       cursor: pointer;
-  }
-
-  #container_card:hover {
-    background-color: #73a25a;
   }
 </style>
