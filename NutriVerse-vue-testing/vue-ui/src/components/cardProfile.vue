@@ -1,6 +1,11 @@
 <script>
 export default {
   name: "cardProfile",
+  data(){
+    return{
+      isExternalButtonDisabled: false,
+    }
+  },
   props: {
     email: String,
     nameP: String,
@@ -32,15 +37,22 @@ export default {
     },
     openInteractionDashboard() {
       this.$emit("openInteractionDashboard", this.code);
-    }
+    },
+
+    disableExternalButton(){
+      this.isExternalButtonDisabled=true;
+    },
+    enableExternalButton(){
+      this.isExternalButtonDisabled=false;
+    },
   }
 }
 </script>
 
 <template>
-  <button class="button_card_profile" @click="openInteractionDashboard" disabled>
+  <button class="button_card_profile" @click="openInteractionDashboard" :disabled="isExternalButtonDisabled">
     <div id="container_card">
-      <button class="close_button" @click="removeSub">
+      <button class="close_button" @click="removeSub" @mouseover="disableExternalButton" @mouseout="enableExternalButton">
         <img src="@/assets/closeButton.png" style="width: 100%; height: 100%"/>
       </button>
       <div id="div_card_pic">
