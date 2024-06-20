@@ -106,6 +106,10 @@ export default {
       this.function_addSubReq(this.addSubr)
     },
 
+    openStats(email, auth_token){
+      this.$emit("openStats", email, auth_token)
+    },
+
     changePlan(){
       if(this.typeAcc===0){
         this.function_upgrade(this.newProfession)
@@ -190,7 +194,7 @@ export default {
 
 <template>
   <div id="out_containter">
-    <profile-container :email="email" :typeAcc="typeAcc" :user-n="userN" :age="age" :gender="gender" :height="height" :weight="weight" :prof="prof" @logout="logout"/>
+    <profile-container :email="email" :typeAcc="typeAcc" :user-n="userN" :age="age" :gender="gender" :height="height" :weight="weight" :prof="prof" @logout="logout" @openStats="openStats"/>
     <div id="div_profile_space"></div>
 
     <div :class="{ 'div_subscriptions': typeAcc===0 || typeAcc===1, 'div_subscriptions_pro' : typeAcc===2 }">
@@ -214,7 +218,7 @@ export default {
       </div>
       <div id="div_info_card">
           <div v-for="pro in patiets" :key="pro.code" class="card_div">
-              <cardProfile  :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
+              <cardProfile  @openStats="openStats" :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
           </div>
           <div v-for="pro in requestsSub" :key="pro.email" class="card_div">
             <cardProfileReq :email="pro.email" :auth_token="auth_token"/>
