@@ -9,6 +9,7 @@ export default {
       heightU: this.height,
       ageU: this.age,
       professionU: this.prof,
+      genderU: this.gender,
     }
   },
   props: {
@@ -38,8 +39,8 @@ export default {
       return await response.json()
     },
 
-    async function_update(name, weight, age, height, profession) {
-      return await this.function_query("PUT", "user", { name, weight, age, height, profession })
+    async function_update(name, weight, age, height, profession, gender) {
+      return await this.function_query("PUT", "user", { name, weight, age, height, profession, gender })
     },
 
 
@@ -65,7 +66,7 @@ export default {
           }
         }
       }
-      const response = await this.function_update(this.nameU, this.weightU, this.ageU, this.heightU, profession);
+      const response = await this.function_update(this.nameU, this.weightU, this.ageU, this.heightU, profession, this.genderU);
       alert(response.message);
     }
   },
@@ -129,7 +130,7 @@ export default {
                   <h2 class="h2_form_down" style="width: 20%">Age: </h2>
                   <input class="input_form_down" style="width: 20%" type="Number" v-model="ageU" name="Age" :placeholder=age>
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw">Gender: </h2>
-                  <select class="input_form_down" style="width: 21.5%" name="Gender">
+                  <select class="input_form_down" style="width: 21.5%" v-model="genderU"  name="gender">
                     <option value="" disabled selected >{{gender}}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>

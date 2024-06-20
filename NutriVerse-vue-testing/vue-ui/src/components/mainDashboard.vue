@@ -16,6 +16,7 @@ export default {
       age: Number,
       gender: "",
       prof : "",
+      newProfession : "",
       typeAcc: 4,
       email: "",
       auth_token: null,
@@ -59,6 +60,14 @@ export default {
       return await response.json()
     },
 
+    async function_upgrade(Profession){
+      return await this.function_query_post("POST", "prouser", { Profession })
+    },
+
+    async function_downgrade(){
+      return await this.function_query("DELETE", "prouser")
+    },
+
     async function_data() {
       return await this.function_query("GET", "user")
     },
@@ -92,9 +101,32 @@ export default {
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
     },
+
     sendSubRequest(){
-      this.function_addSubReq(this.addSubr);
-    }
+      this.function_addSubReq(this.addSubr)
+    },
+
+    changePlan(){
+      if(this.typeAcc===0){
+        this.function_upgrade(this.newProfession)
+            .then(json => {
+              document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              let expires = new Date();
+              expires.setTime(expires.getTime() + 3600 * 1000);
+              document.cookie = `auth_token=${json.token}; expires=${expires.toUTCString()}; path=/`;
+              this.auth_token = json.token;
+            })
+      }else{
+        this.function_downgrade()
+            .then(json => {
+              document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              let expires = new Date();
+              expires.setTime(expires.getTime() + 3600 * 1000);
+              document.cookie = `auth_token=${json.token}; expires=${expires.toUTCString()}; path=/`;
+              this.auth_token = json.token;
+            })
+      }
+    },
 
     },
     created() {
@@ -109,10 +141,10 @@ export default {
               this.gender = data.gender;
               this.email = data.email;
               if(data.weight.length>0){
-                this.weight = data.weight[0].value;
+                this.weight = data.weight[data.weight.length-1].value;
               }
               if (data.userType==="ProUser"){
-                if (data.Profession !== ""){
+                if (data.Profession !== "Premium User"){
                   this.prof = data.Profession
                   this.typeAcc = 2;
                 }else{
@@ -197,7 +229,13 @@ export default {
         <button class="maindash_button" id="but_money" v-if="typeAcc!==0">
           <img alt="Error" src="@/assets/catIcon.png" style="width: 80%; height: 80%">
         </button>
-        <button class="maindash_button" id="but_money">
+        <select v-model="newProfession" v-if="typeAcc===0">
+          <option value="" disabled selected ></option>
+          <option value="Nutritionist">Nutritionist</option>
+          <option value="Personal Trainer">Personal Trainer</option>
+          <option value="Premium user">Premium user</option>
+        </select>
+        <button class="maindash_button" id="but_money" @click="changePlan">
           <img alt="Error" src="@/assets/dollarIcon.png" style="width: 80%; height: 80%" v-if="typeAcc===0">
           <img alt="Error" src="@/assets/downgrade.png" style="width: 80%; height: 80%" v-if="typeAcc!==0">
         </button>
