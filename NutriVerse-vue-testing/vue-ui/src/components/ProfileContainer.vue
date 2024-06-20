@@ -1,6 +1,9 @@
 <script>
+import BoxProfileIcon from "@/components/boxProfileIcon.vue";
+
 export default {
   name: "ProfileContainer",
+  components: {BoxProfileIcon},
   data() {
     return {
       auth_token : "",
@@ -21,6 +24,7 @@ export default {
     gender: "",
     prof : "",
     email : "",
+    isStatsPage: false,
   },
   methods: {
     async function_query(method, uri, data) {
@@ -43,9 +47,13 @@ export default {
       return await this.function_query("PUT", "user", { name, weight, age, height, profession, gender })
     },
 
+    openStats(email, auth_token){
+      this.$emit("openStats", email, auth_token)
+    },
 
     logout() {
       this.$emit("logout");
+      this.$emit("back")
     },
 
     getCookie(name) {
@@ -66,6 +74,9 @@ export default {
           }
         }
       }
+      if(this.genderU===""){
+        this.genderU=this.gender
+      }
       const response = await this.function_update(this.nameU, this.weightU, this.ageU, this.heightU, profession, this.genderU);
       alert(response.message);
     }
@@ -81,17 +92,16 @@ export default {
       <div id="div_logut_pic">
         <div id="div_logout">
           <button id="button_logout" :class="{ 'but_basic': typeAcc===0, 'but_pro' : typeAcc===1 , 'but_work' : typeAcc===2}" @click="logout">
-            <img alt="Error" id="img_logout" src="@/assets/logout.png">
+            <img alt="Error" id="img_logout" src="@/assets/logout.png" v-if="!isStatsPage">
+            <img alt="Error" id="img_logout" src="@/assets/backArrow.png" v-if="isStatsPage">
           </button>
         </div>
-        <div id="div_pic">
-          <img alt="Error" id="img_pic" src="@/assets/defaultPIC.png"  />
-        </div>
+        <box-profile-icon :email="this.email" :auth_token="this.auth_token" @openStats="openStats"></box-profile-icon>
 
-        <div id="radio_buttons" v-if="typeAcc===2">
-          <input type="radio" id="radio_N" name="account_type" :checked="prof === 'Nutritionist'">
+        <div id="radio_buttons" v-if="typeAcc===2" >
+          <input type="radio" id="radio_N" name="account_type" :checked="prof === 'Nutritionist'" :disabled="isStatsPage">
           <label for="radio_basic">N</label><br>
-          <input type="radio" id="radio_PT" name="account_type" :checked="prof === 'Personal Trainer'">
+          <input type="radio" id="radio_PT" name="account_type" :checked="prof === 'Personal Trainer'" :disabled="isStatsPage">
           <label for="radio_pro">PT</label><br>
         </div>
 
@@ -100,13 +110,13 @@ export default {
         <div>
           <div id="div_upForm">
             <h2 id="h2_profile">Profile:</h2>
-            <button id="but_pi" :class="{ 'but_pi_basic': typeAcc===0, 'but_pi_pro' : typeAcc===1 , 'but_pi_work' : typeAcc===2}" @click="updateProfile" >UPDATE</button>
+            <button id="but_pi" :class="{ 'but_pi_basic': typeAcc===0, 'but_pi_pro' : typeAcc===1 , 'but_pi_work' : typeAcc===2}" @click="updateProfile" v-if="!isStatsPage">UPDATE</button>
           </div>
           <form>
             <div id="div_input_form">
               <div class="div_inner_form">
                 <h2 class="h2_form">Name: </h2>
-                <input class="input_form" type="text" name="name"  v-model="nameU" :placeholder=userN>
+                <input class="input_form" type="text" name="name"  v-model="nameU" :placeholder=userN :disabled="isStatsPage">
               </div>
               <div class="div_inner_form">
                 <h2 class="h2_form">Email: </h2>
@@ -122,16 +132,16 @@ export default {
               <div id="div_downForm">
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Weight: </h2>
-                  <input class="input_form_down" style="width: 20%"  type="Number" v-model="weightU"  name="Weight" :placeholder=weight>
+                  <input class="input_form_down" style="width: 20%"  type="Number" v-model="weightU"  name="Weight" :placeholder=weight :disabled="isStatsPage">
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw" >Height: </h2>
-                  <input class="input_form_down" style="width: 20%" type="Number" v-model="heightU" name="Height" :placeholder=height>
+                  <input class="input_form_down" style="width: 20%" type="Number" v-model="heightU" name="Height" :placeholder=height :disabled="isStatsPage">
                 </div>
                 <div class="div_inner_form">
                   <h2 class="h2_form_down" style="width: 20%">Age: </h2>
-                  <input class="input_form_down" style="width: 20%" type="Number" v-model="ageU" name="Age" :placeholder=age>
+                  <input class="input_form_down" style="width: 20%" type="Number" v-model="ageU" name="Age" :placeholder=age :disabled="isStatsPage">
                   <h2 class="h2_form_down" style="width: 20%; margin-left: 1vw">Gender: </h2>
-                  <select class="input_form_down" style="width: 21.5%" v-model="genderU"  name="gender">
-                    <option value="" disabled selected >{{gender}}</option>
+                  <select class="input_form_down" style="width: 21.5%" v-model="genderU"  name="gender" :disabled="isStatsPage">
+                    <option value="" selected>{{gender}}</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>

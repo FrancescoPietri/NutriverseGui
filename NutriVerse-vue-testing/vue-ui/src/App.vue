@@ -2,6 +2,7 @@
 import InformationPage from "@/components/informationPage.vue";
 import MainDashboard from "@/components/mainDashboard.vue";
 import InteractionDashboard from "@/components/interactionDashboard.vue";
+import StatsPage from "@/components/StatsPage.vue";
 export default {
   name: 'App',
   data() {
@@ -11,6 +12,8 @@ export default {
       interactionCode: "",
       logged: false,
       auth_token: "",
+      statsPage: false,
+      email: "",
     }
   },
 
@@ -27,6 +30,9 @@ export default {
     logged(newVal) {
       localStorage.setItem('logged', JSON.stringify(newVal));
     },
+    statsPage(newVal) {
+      localStorage.setItem('statsPage', JSON.stringify(newVal))
+    }
   },
 
   methods: {
@@ -62,8 +68,14 @@ export default {
       this.interacting = true;
       this.interactionCode = code;
     },
+    openStats(email, auth_token){
+      this.statsPage=true;
+      this.email=email;
+      this.auth_token=auth_token;
+    },
     exitInteraction() {
       this.interacting = false;
+      this.statsPage = false;
     }
   },
 
@@ -73,6 +85,7 @@ export default {
     this.IdCode = localStorage.getItem('IdCode') || "ALDKSIFN";
     this.interactionCode = localStorage.getItem('interactionCode') || "";
     this.logged = JSON.parse(localStorage.getItem('logged')) || false;
+    this.statsPage = JSON.parse(localStorage.getItem('statsPage')) || false;
 
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -87,6 +100,7 @@ export default {
   },
 
   components: {
+    StatsPage,
     InteractionDashboard,
     MainDashboard,
     InformationPage
@@ -96,8 +110,9 @@ export default {
 
 <template>
   <information-page v-if="!logged" @logged="login"/>
-  <main-dashboard v-if="logged && !interacting" @logout="logout" @openInteractionDashboard="openInteractionDashboard" :id-code="IdCode"/>
+  <main-dashboard v-if="logged && !interacting && !statsPage" @logout="logout" @openInteractionDashboard="openInteractionDashboard" @openStats="openStats" :id-code="IdCode"/>
   <interaction-dashboard v-if="interacting" :IdCode="IdCode" :interactionCode="interactionCode" @back="exitInteraction"/>
+  <stats-page v-if="statsPage" :email="email" @back="exitInteraction"/>
 </template>
 
 <style>

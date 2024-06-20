@@ -1,6 +1,9 @@
 <script>
+import BoxProfileIcon from "@/components/boxProfileIcon.vue";
+
 export default {
   name: "cardProfile",
+  components: {BoxProfileIcon},
   data(){
     return{
       isExternalButtonDisabled: false,
@@ -32,6 +35,10 @@ export default {
       return await this.function_query_post("DELETE", `subscription/${email}`)
     },
 
+    openStats(email, auth_token){
+      this.$emit("openStats", email, auth_token)
+    },
+
     removeSub() {
       this.function_remove(this.email);
     },
@@ -55,9 +62,7 @@ export default {
       <button class="close_button" @click="removeSub" @mouseover="disableExternalButton" @mouseout="enableExternalButton">
         <img src="@/assets/closeButton.png" style="width: 100%; height: 100%"/>
       </button>
-      <div id="div_card_pic">
-        <img src="@/assets/defaultPIC.png" />
-      </div>
+      <box-profile-icon :email="email" style="width: 8.3vw;" @openStats="openStats"/>
       <div id="div_info_card">
         <div class="show_info">
           <h2 class="h2_card" > Email: {{ email }}</h2>
