@@ -126,7 +126,6 @@ export default {
             :id="!signUp ? 'rad_log' : ''">Login</button>
           <button :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="signupRequest"
             :id="signUp ? 'rad_sign' : ''">Signup</button>
-          <button :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }">Google</button>
         </div>
       </div>
     </div>
@@ -252,7 +251,7 @@ export default {
   padding: 5px;
   /* Aggiunge un padding al bottone */
   margin-bottom: 30px;
-  width: 33.3%;
+  width: 50%;
   /* Imposta la larghezza del bottone al 100% */
   background-color: #e8f4fc;
   /* Imposta il colore di sfondo del bottone */
@@ -289,7 +288,7 @@ export default {
   padding: 5px;
   /* Aggiunge un padding al bottone */
   margin-bottom: 30px;
-  width: 33.3%;
+  width: 50%;
   /* Imposta la larghezza del bottone al 100% */
   background-color: #e8f4fc;
   /* Imposta il colore di sfondo del bottone */
