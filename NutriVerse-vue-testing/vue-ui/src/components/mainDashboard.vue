@@ -117,20 +117,12 @@ export default {
       if(this.typeAcc===0){
         this.function_upgrade(this.newProfession)
             .then(json => {
-              document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-              let expires = new Date();
-              expires.setTime(expires.getTime() + 3600 * 1000);
-              document.cookie = `auth_token=${json.token}; expires=${expires.toUTCString()}; path=/`;
-              this.auth_token = json.token;
+              this.$emit("logout")
             })
       }else{
         this.function_downgrade()
             .then(json => {
-              document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-              let expires = new Date();
-              expires.setTime(expires.getTime() + 3600 * 1000);
-              document.cookie = `auth_token=${json.token}; expires=${expires.toUTCString()}; path=/`;
-              this.auth_token = json.token;
+              this.$emit("logout")
             })
       }
     },
@@ -240,7 +232,7 @@ export default {
           <option value="" disabled selected ></option>
           <option value="Nutritionist">Nutritionist</option>
           <option value="Personal Trainer">Personal Trainer</option>
-          <option value="Premium user">Premium user</option>
+          <option value="Premium User">Premium user</option>
         </select>
         <button class="maindash_button" id="but_money" @click="changePlan">
           <img alt="Error" src="@/assets/dollarIcon.png" style="width: 80%; height: 80%" v-if="typeAcc===0">
