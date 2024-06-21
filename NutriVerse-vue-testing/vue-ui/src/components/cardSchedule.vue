@@ -1,34 +1,79 @@
 <script>
 export default {
   name: "cardSchedule",
+  data(){
+    return{
+      isExternalButtonDisabled: false,
+      newComment: "",
+    }
+  },
   props:{
     url:String,
     typeSchedule:String,
-    comments:{}
+    comments:[],
+    typeUser: false
   },
   methods: {
     openUrl(){
-      window.open(this.url, '_blank');
+      if(!this.isExternalButtonDisabled)
+        window.open(this.url, '_blank');
+    },
+    disableExternalButton(){
+      this.isExternalButtonDisabled=true;
+    },
+    enableExternalButton(){
+      this.isExternalButtonDisabled=false;
+    },
+    removePlan(){
+      this.$emit("removePlan");
+    },
+    addComment(){
+      this.$emit("addComment", this.typeSchedule, this.newComment)
     }
+  },
+  created() {
+    console.log(this.comments)
   }
 }
 
 </script>
 
 <template>
-  <div :class="{ 'container_card_sched_diet': typeSchedule==='Diet', 'container_card_sched_WK': typeSchedule==='Workout' }" @click="openUrl">
+  <div :class="{ 'container_card_sched_diet': typeSchedule==='Diet', 'container_card_sched_WK': typeSchedule==='Workout' }" @click="openUrl" >
+    <button class="close_button" @click="removePlan" @mouseover="disableExternalButton" @mouseout="enableExternalButton">
+      <img src="@/assets/closeButton.png" style="width: 100%; height: 100%"/>
+    </button>
     <img src="@/assets/Diet_Icon.png" v-if="typeSchedule==='Diet'" class="Schedule_img">
     <img src="@/assets/Workout_Icon.png" v-if="typeSchedule==='Workout'" class="Schedule_img">
     <div class="comments">
-      <div v-for="(comment, index) in comments" :key="index" class="comment">
-        {{ comment }}
+      <div v-for="comment in comments" :key="comment.date" class="comment">
+        {{ comment.message }}
       </div>
     </div>
+    <div>
+     <input v-if="!this.typeUser" v-model="newComment" @mouseover="disableExternalButton" @mouseout="enableExternalButton" placeholder="write your comment here"/>
+     <button v-if="!this.typeUser" @mouseover="disableExternalButton" @mouseout="enableExternalButton" @click="addComment" > > </button>
+    </div>
   </div>
-</template>
+  </template>
 
 
 <style scoped>
+
+.close_button{
+  margin-left: -18vw;
+  border-radius: 30%;
+  border:none;
+  background-color: transparent;
+  width: 2vw;
+  transition: background-color 0.3s ease;
+}
+
+.close_button:hover {
+  background-color: #844034;
+  cursor: pointer;
+}
+
 .Schedule_img {
   border-radius: 50%;
   background-color: black;
@@ -67,6 +112,7 @@ export default {
 
 .comments {
   width: 100%;
+  height: 30vh;
   margin-top: 2vh;
   text-align: left;
 }

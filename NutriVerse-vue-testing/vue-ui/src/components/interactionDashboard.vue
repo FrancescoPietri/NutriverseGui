@@ -1,5 +1,6 @@
 <script>
 import CardSchedule from "@/components/cardSchedule.vue";
+import CardProfile from "@/components/cardProfile.vue";
 
 export default {
   name: "interactionDashboard",
@@ -7,9 +8,13 @@ export default {
     return{
       auth_token: "",
       saveStatusSubr: "",
+      bool_chat: false,
+      inputUrl: "",
+      inputTypeP: "",
+      plans: [],
     }
   },
-  components: {CardSchedule},
+  components: {CardProfile, CardSchedule},
   props: {
     IdMail: String,
     InteractionEmail: String,
@@ -35,8 +40,24 @@ export default {
       return await response.json();
     },
 
-    async function_schedule(email) {
+    async function_schedule_subr(email) {
+      return await this.function_query("GET", `professionPlan/${email}`);
+    },
+
+    async function_schedule_basic(email) {
       return await this.function_query("GET", `upload/${email}`);
+    },
+
+    async function_add_schedule(clientEmail, url, type) {
+      return await this.function_query("POST", `upload`, {clientEmail, url, type} );
+    },
+
+    async function_remove_schedule(clientEmail, type) {
+      return await this.function_query("DELETE", `upload/${clientEmail}`, {type} );
+    },
+
+    async function_add_comment(clientEmail, type, comment) {
+      return await this.function_query("PUT", `upload/${clientEmail}`, {type, comment} );
     },
 
     back() {
@@ -47,6 +68,18 @@ export default {
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(";").shift();
     },
+    openChat(){
+      this.bool_chat = !this.bool_chat;
+    },
+    addSchedule(){
+      this.function_add_schedule(this.InteractionEmail, this.inputUrl, this.inputTypeP)
+    },
+    removePlan(typeP){
+      this.function_remove_schedule(this.InteractionEmail, typeP)
+    },
+    addComment(typeSchedule, newComment){
+      this.function_add_comment(this.InteractionEmail, typeSchedule, newComment)
+    }
   },
   created() {
     this.auth_token = this.getCookie("auth_token");
@@ -54,6 +87,27 @@ export default {
       this.saveStatusSubr = JSON.parse(localStorage.getItem('stateSubr')) || false
     }else{
       this.saveStatusSubr = this.Subscriber
+    }
+    if(this.saveStatusSubr){
+        this.function_schedule_subr(this.InteractionEmail)
+            .then((json) => {
+              console.log(json)
+              var tmp
+              for (tmp in json.Plans) {
+                this.plans.push(json.Plans[tmp])
+              }
+              console.log(this.plans)
+            })
+    }else {
+      this.function_schedule_basic(this.InteractionEmail)
+          .then((json) => {
+            console.log(json)
+            var tmp
+            for (tmp in json.Plans) {
+              this.plans.push(json.Plans[tmp])
+            }
+            console.log(this.plans)
+          })
     }
   },
   watch: {
@@ -81,21 +135,31 @@ export default {
           <span class="span_inner">{{ InteractionEmail }}</span>
         </div>
         <button class="inter_button" id="but_money" >
-          <img alt="Error" src="@/assets/catIcon.png" style="width: 60%; height: 60%; background-color: transparent; border-radius: 0%">
+          <img alt="Error" src="@/assets/catIcon.png" style="width: 60%; height: 60%; background-color: transparent; border-radius: 0%" @click="openChat">
         </button>
       </div>
 
-      <button v-if="saveStatusSubr" id="but_plus" class="maindash_button">
-       <img src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
-      </button>
+      <div v-if="saveStatusSubr" id="addPlan">
+        <div id="form_div">
+          <input v-model="inputUrl" placeholder="url"/>
+          <input v-model="inputTypeP" placeholder="type plan"/>
+        </div>
+        <button id="but_plus" class="maindash_button" @click="addSchedule">
+         <img src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
+        </button>
+      </div>
 
 
     </div>
     <div id="div_schedule">
 
-      <card-schedule type-schedule="Diet" url="https://dashboard.render.com/" :comments="['Ciao non mangiare porcate', 'Ricorda di bere molta acqua', 'Mangia più verdure']" />
+      <card-schedule v-for="p in plans"  :key="p.id" :type-schedule="p.type" :url="p.url" :comments="p.comment" :type-user="Subscriber" @removePlan="removePlan" @addComment="addComment"/>
 
-      <card-schedule type-schedule="Workout" url="https://dashboard.render.com/" :comments="['se vedi Gore menalo']"/>
+      <transition name="slide">
+        <div class="div_chat" v-if="bool_chat">
+
+        </div>
+      </transition>
 
     </div>
   </div>
@@ -103,15 +167,63 @@ export default {
 
 <style scoped>
 
+#form_div{
+  display: block;
+}
+
+#addPlan{
+  display: flex;
+  align-items: center;
+  margin-left: 25vw;
+}
+
+.slide-enter-active {
+  animation: slide-in 0.5s ease;
+}
+
+.slide-leave-active {
+  animation: slide-out 0.5s ease;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+
+.div_chat{
+  position: fixed;
+  right: 5vw;
+  bottom: 0;
+  width: 35vw;
+  height: 70vh;
+  background-color: #b8e464;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
 .maindash_button{
   width: 12vh;
   height: 12vh;
   border-radius: 50%;
   border: 1px solid black;
   transition: background-color 0.3s ease;
-  margin-left: 40vw;
+  margin-left: 0;
   overflow: hidden;
-  margin-top: 4vh;
 }
 
 #but_plus{
