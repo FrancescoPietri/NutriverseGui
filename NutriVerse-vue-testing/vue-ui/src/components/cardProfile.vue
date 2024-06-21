@@ -43,7 +43,7 @@ export default {
       this.function_remove(this.email);
     },
     openInteractionDashboard() {
-      this.$emit("openInteractionDashboard", this.code);
+      this.$emit("openInteractionDashboard", this.email);
     },
 
     disableExternalButton(){
