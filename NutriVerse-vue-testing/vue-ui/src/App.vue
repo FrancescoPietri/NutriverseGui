@@ -8,12 +8,13 @@ export default {
   data() {
     return {
       interacting: false,
-      IdCode: "ALDKSIFN",
       interactionCode: "",
+      IdCode: "",
       logged: false,
       auth_token: "",
       statsPage: false,
       email: "",
+      boolSubr: "",
     }
   },
 
@@ -63,10 +64,13 @@ export default {
     logout() {
       this.logged = false;
       document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      localStorage.clear();
     },
-    openInteractionDashboard(code) {
+    openInteractionDashboard(email, YourEmail, boolSubr) {
       this.interacting = true;
-      this.interactionCode = code;
+      this.interactionCode = email;
+      this.IdCode = YourEmail;
+      this.boolSubr = boolSubr;
     },
     openStats(email, auth_token){
       this.statsPage=true;
@@ -110,8 +114,8 @@ export default {
 
 <template>
   <information-page v-if="!logged" @logged="login"/>
-  <main-dashboard v-if="logged && !interacting && !statsPage" @logout="logout" @openInteractionDashboard="openInteractionDashboard" @openStats="openStats" :id-code="IdCode"/>
-  <interaction-dashboard v-if="interacting" :IdCode="IdCode" :interactionCode="interactionCode" @back="exitInteraction"/>
+  <main-dashboard v-if="logged && !interacting && !statsPage" @logout="logout" @openInteractionDashboard="openInteractionDashboard" @openInteractionDashboardSubr="openInteractionDashboard" @openStats="openStats" :id-code="IdCode"/>
+  <interaction-dashboard v-if="interacting" :IdMail="IdCode" :InteractionEmail="interactionCode" :Subscriber="boolSubr" @back="exitInteraction"/>
   <stats-page v-if="statsPage" :email="email" @back="exitInteraction"/>
 </template>
 

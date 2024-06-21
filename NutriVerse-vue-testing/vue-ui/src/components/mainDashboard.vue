@@ -93,8 +93,11 @@ export default {
     removeSubscriber(code) {
       this.patiets = this.patiets.filter(pro => pro.code !== code);
     },
-    openInteractionDashboard(code) {
-      this.$emit("openInteractionDashboard", code);
+    openInteractionDashboard(email) {
+      this.$emit("openInteractionDashboard", email, this.email, false);
+    },
+    openInteractionDashboardSubr(email) {
+      this.$emit("openInteractionDashboardSubr", email, this.email, true);
     },
     getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -218,7 +221,7 @@ export default {
       </div>
       <div id="div_info_card">
           <div v-for="pro in patiets" :key="pro.code" class="card_div">
-              <cardProfile  @openStats="openStats" :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboard"/>
+              <cardProfile  @openStats="openStats" :auth_token="auth_token" :name-p="pro.name" :email="pro.email" :type-p="pro.profession" @removeSub="removeSubscriber" @openInteractionDashboard="openInteractionDashboardSubr"/>
           </div>
           <div v-for="pro in requestsSub" :key="pro.email" class="card_div">
             <cardProfileReq :email="pro.email" :auth_token="auth_token"/>
@@ -228,7 +231,7 @@ export default {
 
     <div id="div_button_menu">
         <div id="insEmail">
-         <insert-email></insert-email>
+         <insert-email v-if="false"></insert-email>
         </div>
         <button class="maindash_button" id="but_money" v-if="typeAcc!==0">
           <img alt="Error" src="@/assets/catIcon.png" style="width: 80%; height: 80%">
