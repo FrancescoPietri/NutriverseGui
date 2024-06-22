@@ -5,10 +5,6 @@ import io from "socket.io-client";
 
 const socket = io("wss://nutriverse.onrender.com");
 
-socket.on("receiveMessage",(data)=>{
-  console.log(data.payload);
-})
-
 export default {
   name: "interactionDashboard",
   data(){
@@ -133,7 +129,7 @@ export default {
       this.messages.push(msg);
     },
 
-    receiveMessage(){
+    receiveMessage(payload){
       this.function_getChat(this.saveStatusIntEmail)
           .then(json => {
             console.log(json)
@@ -193,6 +189,10 @@ export default {
     }
   }
 }
+socket.on("receiveMessage",(data)=>{
+  console.log(data.payload);
+  this.receiveMessage(data.payload);
+})
 </script>
 
 <template>
