@@ -95,6 +95,7 @@ export default {
               console.log(json)
               this.messages = json.messages;
             })
+
       }else{
         socket.disconnect();
         console.log("Disconnected from server");
@@ -128,13 +129,12 @@ export default {
       this.messages.push(msg);
     },
 
-    receiveMessageN(payload){
-      const msg = {
-        id : this.messages.length,
-        sender : this.saveStatusIntEmail,
-        text : payload,
-      }
-      this.messages.push(msg);
+    receiveMessageN(){
+      this.function_getChat(this.saveStatusIntEmail)
+          .then(json => {
+            console.log(json)
+            this.messages = json.messages;
+          })
     }
   },
   created() {
@@ -157,7 +157,7 @@ export default {
 
     socket.on("receiveMessage",(data)=>{
       console.log(data.payload);
-      this.receiveMessageN(data.payload)
+      this.receiveMessageN()
     })
 
     if(this.saveStatusSubr){
