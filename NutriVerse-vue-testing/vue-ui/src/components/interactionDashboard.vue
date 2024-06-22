@@ -101,7 +101,7 @@ export default {
       this.function_add_comment(this.InteractionEmail, typeSchedule, newComment)
     },
 
-    sendMessage() {
+    sendMessageN() {
       const messageJson = {
         senderId: this.IdMail,
         receiverId: this.InteractionEmail,
@@ -109,10 +109,20 @@ export default {
       };
       console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
+      this.function_getChat(this.InteractionEmail)
+          .then(json=>{
+            console.log(json)
+            this.messages=json.messages;
+          })
     },
 
-    receiveMessage(payload){
+    receiveMessageN(payload){
       this.function_update_messages(this.InteractionEmail, payload)
+      this.function_getChat(this.InteractionEmail)
+          .then(json=>{
+            console.log(json)
+            this.messages=json.messages;
+          })
     }
   },
   created() {
@@ -121,13 +131,7 @@ export default {
 
     socket.on("receiveMessage",(data)=>{
       console.log(data.payload);
-      this.receiveMessage(data.payload);
-      const msg = {
-        id:this.messages.length,
-        text:data.payload,
-        sender: this.InteractionEmail
-      };
-      this.messages.push(msg)
+      this.receiveMessageN(data.payload)
     })
 
     this.auth_token = this.getCookie("auth_token");
@@ -210,13 +214,13 @@ export default {
       <transition name="slide">
           <div class="div_chat" v-if="bool_chat">
             <div id="area_messages">
-              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.IdMail, 'messageReceiver': mes.sender===this.InteractionEmail}">
+              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.InteractionEmail, 'messageReceiver': mes.sender===this.IdMail}">
                 {{ mes.text }}
               </div>
             </div>
             <div class="input-container">
               <input id="input_chat" placeholder="write your message here!" v-model="payloadMsg">
-              <button id="button_chat" @click="sendMessage"> > </button>
+              <button id="button_chat" @click="sendMessageN"> > </button>
             </div>
           </div>
       </transition>
