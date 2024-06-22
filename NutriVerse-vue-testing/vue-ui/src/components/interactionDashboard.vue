@@ -113,14 +113,14 @@ export default {
       socket.emit('sendMessage', messageJson);
       const msg = {
         id : this.messages.length,
-        sender : this.saveStatusIntEmail,
+        sender : this.saveStatusidEmail,
         text : this.payloadMsg,
       }
       this.messages.push(msg);
     },
 
     receiveMessageN(payload){
-      this.function_update_messages(this.saveStatusIntEmail, payload)
+      this.function_update_messages(this.saveStatusidEmail, payload)
       const msg = {
         id : this.messages.length,
         sender : this.saveStatusIntEmail,
@@ -235,7 +235,7 @@ export default {
       <transition name="slide">
           <div class="div_chat" v-if="bool_chat">
             <div id="area_messages">
-              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.InteractionEmail, 'messageReceiver': mes.sender===this.IdMail}">
+              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.saveStatusidEmail, 'messageReceiver': mes.sender===this.saveStatusIntEmail}">
                 {{ mes.text }}
               </div>
             </div>
