@@ -49,6 +49,10 @@ export default {
       return await this.function_query("GET", `professionPlan/${email}`);
     },
 
+    async function_update_messages(receiver, message) {
+      return await this.function_query("POST", `messages/`,  {receiver, message});
+    },
+
     async function_schedule_basic(email) {
       return await this.function_query("GET", `upload/${email}`);
     },
@@ -105,6 +109,10 @@ export default {
       console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
     },
+    receiveMessage(payload){
+      this.function_update_messages(this.InteractionEmail, payload)
+
+    }
   },
   created() {
     socket.emit("joinRoom", {user1: this.IdMail, user2: this.InteractionEmail})
@@ -112,6 +120,13 @@ export default {
 
     socket.on("receiveMessage",(data)=>{
       console.log(data.payload);
+      this.receiveMessage(data.payload);
+      const msg = {
+        id:this.messages.length,
+        text:data.payload,
+        sender: this.InteractionEmail
+      };
+      this.messages.push(msg)
     })
 
     this.auth_token = this.getCookie("auth_token");
