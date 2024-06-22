@@ -14,7 +14,7 @@ export default {
       bool_chat: false,
       inputUrl: "",
       inputTypeP: "",
-
+      payloadMsg : "",
       plans: [],
       messages: [],
     }
@@ -214,7 +214,7 @@ export default {
               </div>
             </div>
             <div class="input-container">
-              <input id="input_chat" placeholder="write your message here!">
+              <input id="input_chat" placeholder="write your message here!" v-model="payloadMsg">
               <button id="button_chat" @click="sendMessage"> > </button>
             </div>
           </div>
