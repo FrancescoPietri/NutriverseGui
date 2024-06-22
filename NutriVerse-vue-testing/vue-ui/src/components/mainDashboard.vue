@@ -144,6 +144,7 @@ export default {
     this.auth_token = this.getCookie("auth_token");
     this.function_data().then((json) => {
       if (json.status === 200) {
+        console.log(json);
         const data = json.user;
         this.userN = data.name;
         this.height = data.height;

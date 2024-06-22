@@ -90,15 +90,17 @@ export default {
         if (data.weight.length > 0) {
           this.weight = data.weight[data.weight.length - 1].value;
         }
-        if (data.userType === "ProUser") {
-          if (data.Profession !== "Premium User") {
-            this.prof = data.Profession;
-            this.typeAcc = 2;
+        if (
+          data.Profession === "Personal Trainer" ||
+          data.Profession === "Nutritionist"
+        ) {
+          this.typeAcc = 2;
+        } else {
+          if (data.Profession === "Premium User") {
+            this.typeAcc = 1;
           } else {
             this.typeAcc = 1;
           }
-        } else {
-          this.typeAcc = 0;
         }
       }
     });
