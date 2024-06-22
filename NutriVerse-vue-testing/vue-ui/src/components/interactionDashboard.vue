@@ -125,7 +125,7 @@ export default {
         id : this.messages.length,
         sender : this.saveStatusidEmail,
         text : this.payloadMsg,
-      }
+      };
       this.messages.push(msg);
     },
 
@@ -134,10 +134,11 @@ export default {
         id : this.messages.length,
         sender : this.saveStatusIntEmail,
         text : payload,
-      }
+      };
       this.messages.push(msg);
     }
   },
+
   created() {
     this.auth_token = this.getCookie("auth_token");
     if(this.Subscriber===""){
