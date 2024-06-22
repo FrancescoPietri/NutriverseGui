@@ -3,7 +3,7 @@ import CardSchedule from "@/components/cardSchedule.vue";
 import CardProfile from "@/components/cardProfile.vue";
 import io from "socket.io-client";
 
-const socket = io.connect("https://nutriverse.onrender.com:3000");
+const socket = io("wss://nutriverse.onrender.com");
 
 export default {
   name: "interactionDashboard",
@@ -95,20 +95,20 @@ export default {
     },
     addComment(typeSchedule, newComment){
       this.function_add_comment(this.InteractionEmail, typeSchedule, newComment)
-    }
-  },
-  created() {
-    socket.emit("joinRoom", {user1: this.IdMail, user2: this.InteractionEmail})
-
-    const sendMessage = () =>{
+    },
+    sendMessage() {
       const messageJson = {
         senderId: "john.doe@example.com",
         receiverId: "cerkapatrick@gmail.com",
         payload: "giggino"
       };
-
+      console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
-    }
+    },
+  },
+  created() {
+    socket.emit("joinRoom", {user1: this.IdMail, user2: this.InteractionEmail})
+    console.log("Joined room with users:", this.IdMail, this.InteractionEmail);
 
     socket.on("receiveMessage",(data)=>{
       console.log(data.payload);
@@ -200,7 +200,7 @@ export default {
             </div>
             <div class="input-container">
               <input id="input_chat" placeholder="write your message here!">
-              <button id="button_chat" > > </button>
+              <button id="button_chat" @click="sendMessage"> > </button>
             </div>
           </div>
       </transition>
