@@ -81,6 +81,8 @@ export default {
     },
 
     back() {
+      socket.disconnect();
+      console.log("Disconnected from server");
       this.$emit("back");
     },
     getCookie(name) {
@@ -102,9 +104,6 @@ export default {
               this.messages = json.messages;
             })
 
-      }else{
-        socket.disconnect();
-        console.log("Disconnected from server");
       }
     },
 
