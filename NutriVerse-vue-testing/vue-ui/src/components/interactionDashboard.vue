@@ -100,10 +100,11 @@ export default {
     addComment(typeSchedule, newComment){
       this.function_add_comment(this.InteractionEmail, typeSchedule, newComment)
     },
+
     sendMessage() {
       const messageJson = {
-        senderId: "john.doe@example.com",
-        receiverId: "cerkapatrick@gmail.com",
+        senderId: this.IdMail,
+        receiverId: this.InteractionEmail,
         payload: this.payloadMsg
       };
       console.log("Sending message:", messageJson);
