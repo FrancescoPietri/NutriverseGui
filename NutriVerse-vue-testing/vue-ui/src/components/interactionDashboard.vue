@@ -130,11 +130,12 @@ export default {
     },
 
     receiveMessage(payload){
-      this.function_getChat(this.saveStatusIntEmail)
-          .then(json => {
-            console.log(json)
-            this.messages = json.messages;
-          })
+      const msg = {
+        id : this.messages.length,
+        sender : this.saveStatusIntEmail,
+        text : payload,
+      }
+      this.messages.push(msg);
     }
   },
   created() {
