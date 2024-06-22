@@ -25,7 +25,7 @@ export default {
       this.isExternalButtonDisabled=false;
     },
     removePlan(){
-      this.$emit("removePlan");
+      this.$emit("removePlan", this.typeSchedule);
     },
     addComment(){
       this.$emit("addComment", this.typeSchedule, this.newComment)
@@ -59,6 +59,7 @@ export default {
 
 
 <style scoped>
+
 
 .close_button{
   margin-left: -18vw;
