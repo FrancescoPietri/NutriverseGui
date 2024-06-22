@@ -119,6 +119,7 @@ export default {
       };
       console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
+      this.function_update_messages(this.saveStatusIntEmail, this.payloadMsg)
       const msg = {
         id : this.messages.length,
         sender : this.saveStatusidEmail,
@@ -128,7 +129,6 @@ export default {
     },
 
     receiveMessageN(payload){
-      this.function_update_messages(this.saveStatusidEmail, payload)
       const msg = {
         id : this.messages.length,
         sender : this.saveStatusIntEmail,
