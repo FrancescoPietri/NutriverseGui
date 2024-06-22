@@ -236,9 +236,15 @@ export default {
     <div id="div_button_menu">
 
         <transition name="slide">
-          <div id="insEmail" v-if="isAdding || isReporting">
+          <div :class="{'insEmail': isAdding===true, 'insEmailReport':isReporting===true }" v-if="isAdding || isReporting">
             <input v-model="addSubr" class="input_email" placeholder="Insert here the email of the professionist to subscribe" v-if="isAdding">
             <button id="button_email" @click="sendSubRequest" v-if="isAdding"> > </button>
+
+            <div class="div_input_email" v-if="isReporting">
+              <input v-model="addSubr" class="input_email" placeholder="Insert the email of the user that you want to report" v-if="isReporting">
+              <input v-model="addSubr" class="input_email" placeholder="Description" v-if="isReporting">
+            </div>
+            <button id="button_email" @click="sendSubRequest" v-if="isReporting"> > </button>
           </div>
         </transition>
 
@@ -317,7 +323,13 @@ export default {
     padding: 5px;
   }
 
-  #insEmail{
+  .div_input_email{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+  }
+
+  .insEmail{
     display: flex;
     align-content: center;
     position: relative;
@@ -329,6 +341,19 @@ export default {
     border-radius: 10px;
     border: 2px solid black;
   }
+
+.insEmailReport{
+  display: flex;
+  align-content: center;
+  position: relative;
+  left: +20%;
+  margin-bottom: 4vh;
+  background-color: #cf1f02;
+  width: 23vw;
+  height: 20vh;
+  border-radius: 10px;
+  border: 2px solid black;
+}
 
   #div_profile_space{
     width: 30vw;
