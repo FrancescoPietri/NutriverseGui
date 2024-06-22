@@ -97,10 +97,12 @@ export default {
 </template>
 
 <style scoped>
+
 .button_card_profile {
   background-color: transparent;
   border: none;
-  height: 33vh;
+  height: 40vh;
+  overflow: hidden;
 }
 
 .close_button {
@@ -119,7 +121,7 @@ export default {
 }
 
 #div_info_card {
-  margin-top: 3vh;
+  margin-top: 2vh;
   display: flex;
   flex-direction: column;
   align-items: center; /* Per centrare verticalmente */
@@ -132,8 +134,7 @@ export default {
 }
 
 .h2_card {
-  font-family: verdana;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 #div_card_pic {

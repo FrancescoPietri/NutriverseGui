@@ -259,6 +259,7 @@ export default {
     </div>
 
     <div id="div_button_menu">
+
       <transition name="slide">
         <div
           :class="{
@@ -291,7 +292,7 @@ export default {
               v-if="isReporting"
             />
           </div>
-          <button id="button_email" @click="sendSubRequest" v-if="isReporting">
+          <button id="button_email_report" @click="" v-if="isReporting">
             >
           </button>
         </div>
@@ -377,10 +378,26 @@ export default {
   margin-right: auto;
   background-color: #45a049;
   transition: background-color 0.3s ease;
+  border-radius: 0 10px 10px 0 ;
 }
 
 #button_email:hover {
   background-color: #007a07;
+}
+
+#button_email_report  {
+  width: 2vw;
+  padding: 21px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: -3.4vw;
+  background-color: #850000;
+  transition: background-color 0.3s ease;
+  border-radius: 0 10px 10px 0 ;
+}
+
+#button_email_report:hover {
+  background-color: #430000;
 }
 
 .input_email {
@@ -395,7 +412,7 @@ export default {
 .div_input_email {
   margin-top: auto;
   margin-bottom: auto;
-  margin-left: auto;
+  margin-left: 2vw;
 }
 
 .insEmail {
