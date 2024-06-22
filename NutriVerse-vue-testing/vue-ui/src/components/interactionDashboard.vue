@@ -5,6 +5,11 @@ import io from "socket.io-client";
 
 const socket = io("wss://nutriverse.onrender.com");
 
+socket.on("receiveMessage",(data)=>{
+  console.log(data.payload);
+  this.receiveMessageN()
+})
+
 export default {
   name: "interactionDashboard",
   data(){
@@ -90,6 +95,7 @@ export default {
         socket.emit("joinRoom", {user1: this.saveStatusidEmail, user2: this.saveStatusIntEmail})
         console.log("Joined room with users:", this.saveStatusidEmail, this.saveStatusIntEmail);
 
+
         this.function_getChat(this.saveStatusIntEmail)
             .then(json => {
               console.log(json)
@@ -154,11 +160,6 @@ export default {
     }else{
       this.saveStatusIntEmail = this.InteractionEmail
     }
-
-    socket.on("receiveMessage",(data)=>{
-      console.log(data.payload);
-      this.receiveMessageN()
-    })
 
     if(this.saveStatusSubr){
         this.function_schedule_subr(this.saveStatusIntEmail)
