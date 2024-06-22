@@ -11,6 +11,8 @@ export default {
     return{
       auth_token: "",
       saveStatusSubr: "",
+      saveStatusidEmail: "",
+      saveStatusIntEmail: "",
       bool_chat: false,
       inputUrl: "",
       inputTypeP: "",
@@ -83,7 +85,7 @@ export default {
     },
 
     openChat(){
-      this.function_getChat(this.InteractionEmail)
+      this.function_getChat(this.saveStatusIntEmail)
           .then(json=>{
             console.log(json)
             this.messages=json.messages;
@@ -92,56 +94,69 @@ export default {
     },
 
     addSchedule(){
-      this.function_add_schedule(this.InteractionEmail, this.inputUrl, this.inputTypeP)
+      this.function_add_schedule(this.saveStatusIntEmail, this.inputUrl, this.inputTypeP)
     },
     removePlan(typeP){
-      this.function_remove_schedule(this.InteractionEmail, typeP)
+      this.function_remove_schedule(this.saveStatusIntEmail, typeP)
     },
     addComment(typeSchedule, newComment){
-      this.function_add_comment(this.InteractionEmail, typeSchedule, newComment)
+      this.function_add_comment(this.saveStatusIntEmail, typeSchedule, newComment)
     },
 
     sendMessageN() {
       const messageJson = {
-        senderId: this.IdMail,
-        receiverId: this.InteractionEmail,
+        senderId: this.saveStatusidEmail,
+        receiverId: this.saveStatusIntEmail,
         payload: this.payloadMsg
       };
       console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
-      this.function_getChat(this.InteractionEmail)
-          .then(json=>{
-            console.log(json)
-            this.messages=json.messages;
-          })
+      const msg = {
+        id : this.messages.length,
+        sender : this.saveStatusIntEmail,
+        text : this.payloadMsg,
+      }
+      this.messages.push(msg);
     },
 
     receiveMessageN(payload){
-      this.function_update_messages(this.InteractionEmail, payload)
-      this.function_getChat(this.InteractionEmail)
-          .then(json=>{
-            console.log(json)
-            this.messages=json.messages;
-          })
+      this.function_update_messages(this.saveStatusIntEmail, payload)
+      const msg = {
+        id : this.messages.length,
+        sender : this.InteractionEmail,
+        text : payload,
+      }
+      this.messages.push(msg);
     }
   },
   created() {
-    socket.emit("joinRoom", {user1: this.IdMail, user2: this.InteractionEmail})
-    console.log("Joined room with users:", this.IdMail, this.InteractionEmail);
-
-    socket.on("receiveMessage",(data)=>{
-      console.log(data.payload);
-      this.receiveMessageN(data.payload)
-    })
-
     this.auth_token = this.getCookie("auth_token");
     if(this.Subscriber===""){
       this.saveStatusSubr = JSON.parse(localStorage.getItem('stateSubr')) || false
     }else{
       this.saveStatusSubr = this.Subscriber
     }
+    if(this.IdMail===""){
+      this.saveStatusidEmail = JSON.parse(localStorage.getItem('stateIdEmail')) || false
+    }else{
+      this.saveStatusidEmail = this.IdMail
+    }
+    if(this.InteractionEmail===""){
+      this.saveStatusIntEmail = JSON.parse(localStorage.getItem('stateIntEmail')) || false
+    }else{
+      this.saveStatusIntEmail = this.InteractionEmail
+    }
+
+    socket.emit("joinRoom", {user1: this.saveStatusidEmail, user2: this.saveStatusIntEmail})
+    console.log("Joined room with users:", this.saveStatusidEmail, this.saveStatusIntEmail);
+
+    socket.on("receiveMessage",(data)=>{
+      console.log(data.payload);
+      this.receiveMessageN(data.payload)
+    })
+
     if(this.saveStatusSubr){
-        this.function_schedule_subr(this.InteractionEmail)
+        this.function_schedule_subr(this.saveStatusIntEmail)
             .then((json) => {
               console.log(json)
               var tmp
@@ -151,7 +166,7 @@ export default {
               console.log(this.plans)
             })
     }else {
-      this.function_schedule_basic(this.InteractionEmail)
+      this.function_schedule_basic(this.saveStatusIntEmail)
           .then((json) => {
             console.log(json)
             var tmp
@@ -165,6 +180,12 @@ export default {
   watch: {
     saveStatusSubr(newVal){
       localStorage.setItem('stateSubr', JSON.stringify(newVal));
+    },
+    saveStatusidEmail(newVal){
+      sessionStorage.setItem('stateIdEmail', JSON.stringify((newVal)));
+    },
+    saveStatusIntEmail(newVal){
+      sessionStorage.setItem('stateIntEmail', JSON.stringify(newVal));
     }
   }
 }
