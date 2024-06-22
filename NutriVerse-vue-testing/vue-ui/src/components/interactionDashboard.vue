@@ -3,7 +3,7 @@ import CardSchedule from "@/components/cardSchedule.vue";
 import CardProfile from "@/components/cardProfile.vue";
 import io from "socket.io-client";
 
-const socket = io.connect("https://nutriverse.onrender.com/");
+const socket = io.connect("https://nutriverse.onrender.com:3000");
 
 export default {
   name: "interactionDashboard",
