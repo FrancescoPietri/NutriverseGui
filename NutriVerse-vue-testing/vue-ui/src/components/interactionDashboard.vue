@@ -52,7 +52,7 @@ export default {
     },
 
     async function_update_messages(receiver, message) {
-      return await this.function_query("POST", `messages/`,  {receiver, message});
+      return await this.function_query("POST", `messages`,  {receiver, message});
     },
 
     async function_schedule_basic(email) {
@@ -123,7 +123,7 @@ export default {
       this.function_update_messages(this.saveStatusIntEmail, payload)
       const msg = {
         id : this.messages.length,
-        sender : this.InteractionEmail,
+        sender : this.saveStatusIntEmail,
         text : payload,
       }
       this.messages.push(msg);
