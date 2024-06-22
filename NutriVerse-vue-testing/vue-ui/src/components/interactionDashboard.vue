@@ -104,14 +104,14 @@ export default {
       const messageJson = {
         senderId: "john.doe@example.com",
         receiverId: "cerkapatrick@gmail.com",
-        payload: "giggino"
+        payload: this.payloadMsg
       };
       console.log("Sending message:", messageJson);
       socket.emit('sendMessage', messageJson);
     },
+
     receiveMessage(payload){
       this.function_update_messages(this.InteractionEmail, payload)
-
     }
   },
   created() {
