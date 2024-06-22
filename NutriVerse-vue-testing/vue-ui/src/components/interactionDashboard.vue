@@ -129,17 +129,23 @@ export default {
       this.messages.push(msg);
     },
 
-    receiveMessage(payload){
+    receiveMessage(data){
       const msg = {
         id : this.messages.length,
         sender : this.saveStatusIntEmail,
-        text : payload,
+        text : data.payload.toString(),
       };
       this.messages.push(msg);
     }
   },
 
   created() {
+
+    socket.on("receiveMessage",(data)=>{
+      console.log(data.payload);
+      this.receiveMessage(data);
+    })
+
     this.auth_token = this.getCookie("auth_token");
     if(this.Subscriber===""){
       this.saveStatusSubr = JSON.parse(localStorage.getItem('stateSubr')) || false
@@ -191,10 +197,6 @@ export default {
     }
   }
 }
-socket.on("receiveMessage",(data)=>{
-  console.log(data.payload);
-  this.receiveMessage(data.payload);
-})
 </script>
 
 <template>
