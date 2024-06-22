@@ -12,6 +12,23 @@ export default {
       inputUrl: "",
       inputTypeP: "",
       plans: [],
+      messages: [
+        { id: 1, text: 'Hello! How are you?', type: 'received' },
+        { id: 2, text: 'I am good, thanks! How about you?', type: 'sent' },
+        { id: 3, text: 'I am fine as well. What are you up to?', type: 'received' },
+        { id: 4, text: 'Just working on some projects.', type: 'sent' },
+        { id: 5, text: 'That sounds interesting!', type: 'received' },
+        { id: 6, text: 'Yes, it is. Let\'s catch up later.', type: 'sent' },
+        { id: 7, text: 'Sure, talk to you later!', type: 'received' },
+        { id: 8, text: 'Hello! How are you?', type: 'received' },
+        { id: 9, text: 'I am good, thanks! How about you?', type: 'sent' },
+        { id: 10, text: 'I am fine as well. What are you up to?', type: 'received' },
+        { id: 11, text: 'Just working on some projects.', type: 'sent' },
+        { id: 12, text: 'That sounds interesting!', type: 'received' },
+        { id: 13, text: 'Yes, it is. Let\'s catch up later.', type: 'sent' },
+        { id: 14, text: 'Sure, talk to you later!', type: 'received' },
+        { id: 15, text: 'Sure, talk to you later! pls bring pizza or mafia will kill my son this evening, ty', type: 'sent' }
+      ],
     }
   },
   components: {CardProfile, CardSchedule},
@@ -141,8 +158,12 @@ export default {
 
       <div v-if="saveStatusSubr" id="addPlan">
         <div id="form_div">
-          <input v-model="inputUrl" placeholder="url"/>
-          <input v-model="inputTypeP" placeholder="type plan"/>
+          <input v-model="inputUrl" placeholder="url of the new schedule"/>
+          <select v-model="inputTypeP">
+            <option value="" selected> type schedule </option>
+            <option value='Diet'> Diet </option>
+            <option value='Workout'> Workout </option>
+          </select>
         </div>
         <button id="but_plus" class="maindash_button" @click="addSchedule">
          <img src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
@@ -153,12 +174,20 @@ export default {
     </div>
     <div id="div_schedule">
 
-      <card-schedule v-for="p in plans"  :key="p.id" :type-schedule="p.type" :url="p.url" :comments="p.comment" :type-user="Subscriber" @removePlan="removePlan" @addComment="addComment"/>
+      <card-schedule v-for="p in plans"  :key="p.id" :type-schedule="p.type" :url="p.url" :comments="p.comment" :type-user="saveStatusSubr" @removePlan="removePlan" @addComment="addComment"/>
 
       <transition name="slide">
-        <div class="div_chat" v-if="bool_chat">
-
-        </div>
+          <div class="div_chat" v-if="bool_chat">
+            <div id="area_messages">
+              <div v-for="mes in messages" :key="mes.id" :class="['message', mes.type]">
+                {{ mes.text }}
+              </div>
+            </div>
+            <div class="input-container">
+              <input id="input_chat" placeholder="write your message here!">
+              <button id="button_chat" > > </button>
+            </div>
+          </div>
       </transition>
 
     </div>
@@ -167,15 +196,140 @@ export default {
 
 <style scoped>
 
-#form_div{
-  display: block;
+#button_chat {
+  border: none;
+  padding: 2vh;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #58a43c;
+  color: white;
+  border-radius: 0 10px 10px 0 ;
 }
 
-#addPlan{
+#button_chat:hover {
+  background-color: #03750b;
+}
+
+.div_chat {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  right: 5vw;
+  bottom: 0;
+  width: 35vw;
+  height: 70vh;
+  background-color: #b8e464;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
+#area_messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #b8e464;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+}
+
+.message.sent {
+  background-color: #dcf8c6;
+  margin-left: 15vw;
+}
+
+.message.received {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+}
+
+#input_chat {
+  border: none;
+  padding: 2vh;
+  font-size: 16px;
+  width: 90%;
+  box-sizing: border-box;
+  border-top: 1px solid #ccc;
+  border-radius: 10px 0 0 10px;
+  margin-bottom: 1vh;
+  margin-left: 1vh;
+  margin-top: 1vh;
+}
+
+#input_chat:focus {
+  border: 2px #4d8330;
+}
+
+
+#addPlan {
+  display: flex;
+  align-items: flex-start;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: auto;
+  margin-left: 32vw;
+}
+
+#form_div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+#form_div input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#form_div select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#but_plus.maindash_button {
   display: flex;
   align-items: center;
-  margin-left: 25vw;
+  justify-content: center;
+  width: 60px;
+  height: 50px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 20px;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
 }
+
+#but_plus.maindash_button:hover {
+  background-color: #45a049;
+}
+
+#but_plus img {
+  width: 80%;
+  height: 80%;
+}
+
 
 .slide-enter-active {
   animation: slide-in 0.5s ease;
@@ -205,15 +359,6 @@ export default {
 
 
 .div_chat{
-  position: fixed;
-  right: 5vw;
-  bottom: 0;
-  width: 35vw;
-  height: 70vh;
-  background-color: #b8e464;
-  border-top: 2px solid black;
-  border-left: 2px solid black;
-  border-right: 2px solid black;
 }
 
 .maindash_button{

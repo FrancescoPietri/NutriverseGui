@@ -20,6 +20,8 @@ export default {
       typeAcc: 4,
       email: "",
       auth_token: null,
+      isAdding: false,
+      isReporting: false,
       professionist: [
       ],
       patiets: [
@@ -111,6 +113,16 @@ export default {
 
     openStats(email, auth_token){
       this.$emit("openStats", email, auth_token)
+    },
+
+    openAddSub(){
+      this.isAdding = !this.isAdding;
+      this.isReporting = false;
+    },
+
+    openReport(){
+      this.isReporting = !this.isReporting;
+      this.isAdding = false
     },
 
     changePlan(){
@@ -222,9 +234,14 @@ export default {
     </div>
 
     <div id="div_button_menu">
-        <div id="insEmail">
-         <insert-email v-if="false"></insert-email>
-        </div>
+
+        <transition name="slide">
+          <div id="insEmail" v-if="isAdding || isReporting">
+            <input v-model="addSubr" class="input_email" placeholder="Insert here the email of the professionist to subscribe" v-if="isAdding">
+            <button id="button_email" @click="sendSubRequest" v-if="isAdding"> > </button>
+          </div>
+        </transition>
+
         <button class="maindash_button" id="but_money" v-if="typeAcc!==0">
           <img alt="Error" src="@/assets/catIcon.png" style="width: 80%; height: 80%">
         </button>
@@ -238,11 +255,10 @@ export default {
           <img alt="Error" src="@/assets/dollarIcon.png" style="width: 80%; height: 80%" v-if="typeAcc===0">
           <img alt="Error" src="@/assets/downgrade.png" style="width: 80%; height: 80%" v-if="typeAcc!==0">
         </button>
-        <button class="maindash_button" id="but_report">
+        <button class="maindash_button" id="but_report" @click="openReport">
           <img alt="Error" src="@/assets/reportIcon.png" style="width: 80%; height: 80%">
         </button>
-       <input v-model="addSubr">
-        <button class="maindash_button" id="but_plus" @click="sendSubRequest">
+        <button class="maindash_button" id="but_plus" @click="openAddSub">
           <img alt="Error" src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
         </button>
       </div>
@@ -252,10 +268,66 @@ export default {
 
 <style scoped>
 
+.slide-enter-active {
+  animation: slide-in 0.5s ease;
+}
+
+.slide-leave-active {
+  animation: slide-out 0.5s ease;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(120%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+
+  #button_email{
+    width: 2vw;
+    padding: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: auto;
+    background-color:  #45a049;
+    transition: background-color 0.3s ease;
+  }
+
+  #button_email:hover{
+    background-color: #007a07;
+  }
+
+  .input_email{
+    width: 80%;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    font-size: 14px;
+    padding: 5px;
+  }
+
   #insEmail{
+    display: flex;
+    align-content: center;
     position: relative;
-    left: +30%;
+    left: +20%;
     margin-bottom: 4vh;
+    background-color: #b0e464;
+    width: 23vw;
+    height: 20vh;
+    border-radius: 10px;
+    border: 2px solid black;
   }
 
   #div_profile_space{
