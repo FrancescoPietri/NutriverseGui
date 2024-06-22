@@ -7,7 +7,6 @@ const socket = io("wss://nutriverse.onrender.com");
 
 socket.on("receiveMessage",(data)=>{
   console.log(data.payload);
-  this.receiveMessageN()
 })
 
 export default {
@@ -134,7 +133,7 @@ export default {
       this.messages.push(msg);
     },
 
-    receiveMessageN(){
+    receiveMessage(){
       this.function_getChat(this.saveStatusIntEmail)
           .then(json => {
             console.log(json)
