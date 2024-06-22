@@ -1,38 +1,41 @@
 <script>
-
 export default {
   name: "loginPage",
   data() {
     return {
       signUp: false,
-      email: '',
-      password: '',
-      retypePassword: ''
-    }
+      email: "",
+      password: "",
+      retypePassword: "",
+    };
   },
   methods: {
     async function_query(method, uri, data) {
-      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri)
+      console.log(
+        "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
+      );
       const headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-      const response = await fetch("https://nutriverse.onrender.com/api/v1/" + uri, {
-        method: method,
-        headers: headers,
-        body: JSON.stringify(data),
-        cache: 'no-cache',
-      })
-      return await response.json()
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      };
+      const response = await fetch(
+        "https://nutriverse.onrender.com/api/v1/" + uri,
+        {
+          method: method,
+          headers: headers,
+          body: JSON.stringify(data),
+          cache: "no-cache",
+        },
+      );
+      return await response.json();
     },
 
-
     async function_login(email, password) {
-      return await this.function_query("POST", "auth", { email, password })
+      return await this.function_query("POST", "auth", { email, password });
     },
 
     async function_register(email, password) {
-      return await this.function_query("POST", "user", { email, password })
+      return await this.function_query("POST", "user", { email, password });
     },
 
     signupRequest() {
@@ -52,23 +55,27 @@ export default {
     },
 
     async submitForm() {
-      document.getElementsByName('send_b')[0].attributes.setNamedItem(document.createAttribute('disabled'));
+      document
+        .getElementsByName("send_b")[0]
+        .attributes.setNamedItem(document.createAttribute("disabled"));
       try {
         if (this.signUp) {
           if (this.password !== this.retypePassword) {
-            alert('Password and Retype Password should match');
-            document.getElementsByName('send_b')[0].attributes.removeNamedItem('disabled');
+            alert("Password and Retype Password should match");
+            document
+              .getElementsByName("send_b")[0]
+              .attributes.removeNamedItem("disabled");
             return;
           }
-          const email = document.getElementsByName('username')[0].value;
-          const password = document.getElementsByName('password')[0].value;
+          const email = document.getElementsByName("username")[0].value;
+          const password = document.getElementsByName("password")[0].value;
           const response = await this.function_register(email, password);
-          if (response!=="") {
+          if (response !== "") {
             alert(response.message);
           }
         } else {
-          const email = document.getElementsByName('username')[0].value;
-          const password = document.getElementsByName('password')[0].value;
+          const email = document.getElementsByName("username")[0].value;
+          const password = document.getElementsByName("password")[0].value;
           const data = await this.function_login(email, password);
           if (data && data.token) {
             let expires = new Date();
@@ -76,25 +83,32 @@ export default {
             document.cookie = `auth_token=${data.token}; expires=${expires.toUTCString()}; path=/`;
             this.$emit("logged", password);
           } else {
-            alert('Login failed');
+            alert("Login failed");
           }
         }
       } catch (error) {
-        console.log('Error:', error);
-        alert('An error occurred. Please try again later.');
+        console.log("Error:", error);
+        alert("An error occurred. Please try again later.");
       }
-      document.getElementsByName('send_b')[0].attributes.removeNamedItem('disabled');
-    }
-  }
-}
-
+      document
+        .getElementsByName("send_b")[0]
+        .attributes.removeNamedItem("disabled");
+    },
+  },
+};
 </script>
 
 <template>
-
-  <div id="login_menu" :class="{ 'signupBackground': signUp, 'loginBackground': !signUp }">
+  <div
+    id="login_menu"
+    :class="{ signupBackground: signUp, loginBackground: !signUp }"
+  >
     <div>
-      <button @click="hidePage" id="closeButton" :class="{ 'closeSignupBG': signUp, 'closeLoginBG': !signUp }">
+      <button
+        @click="hidePage"
+        id="closeButton"
+        :class="{ closeSignupBG: signUp, closeLoginBG: !signUp }"
+      >
         <img src="@/assets/closeButton.png" />
       </button>
 
@@ -108,24 +122,52 @@ export default {
     <div id="div_form">
       <div class="outer_fdiv">
         <form id="login_form" onsubmit="return false">
-          <input type="text" name="username" placeholder="Email" required>
-          <input type="password" name="password" placeholder="Password" v-model="password" required>
-          <div style="display: flex;">
+          <input type="text" name="username" placeholder="Email" required />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            v-model="password"
+            required
+          />
+          <div style="display: flex">
             <div v-if="!signUp" style="height: 85px"></div>
             <transition name="slide">
-              <input type="password" name="retpas" placeholder="Retype Password" v-if="signUp" v-model="retypePassword"
-                required>
+              <input
+                type="password"
+                name="retpas"
+                placeholder="Retype Password"
+                v-if="signUp"
+                v-model="retypePassword"
+                required
+              />
             </transition>
           </div>
-          <button  name="send_b" :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="submitForm">Send</button>
+          <button
+            name="send_b"
+            :class="{ smenuButton: signUp, lmenuButton: !signUp }"
+            @click="submitForm"
+          >
+            Send
+          </button>
         </form>
       </div>
       <div class="outer_fdiv">
         <div id="div_butt_men">
-          <button :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="loginRequest"
-            :id="!signUp ? 'rad_log' : ''">Login</button>
-          <button :class="{ 'smenuButton': signUp, 'lmenuButton': !signUp }" @click="signupRequest"
-            :id="signUp ? 'rad_sign' : ''">Signup</button>
+          <button
+            :class="{ smenuButton: signUp, lmenuButton: !signUp }"
+            @click="loginRequest"
+            :id="!signUp ? 'rad_log' : ''"
+          >
+            Login
+          </button>
+          <button
+            :class="{ smenuButton: signUp, lmenuButton: !signUp }"
+            @click="signupRequest"
+            :id="signUp ? 'rad_sign' : ''"
+          >
+            Signup
+          </button>
         </div>
       </div>
     </div>
@@ -221,15 +263,12 @@ export default {
 
 #login_form {
   width: 70%;
-  /* Imposta la larghezza del form al 100% */
   justify-content: center;
 }
 
 #login_form input:focus {
   outline: none;
-  /* Rimuove l'outline quando l'input è selezionato */
-  border-color: #4CAF50;
-  /* Cambia il colore del bordo quando l'input è selezionato */
+  border-color: #4caf50;
 }
 
 #login_form input {
@@ -247,66 +286,48 @@ export default {
 
 .lmenuButton {
   display: inline-block;
-  /* Aggiunge un margine superiore per separare il bottone dal form */
   padding: 5px;
-  /* Aggiunge un padding al bottone */
   margin-bottom: 30px;
   width: 50%;
-  /* Imposta la larghezza del bottone al 100% */
   background-color: #e8f4fc;
-  /* Imposta il colore di sfondo del bottone */
   border: 1px solid black;
   height: 70px;
   color: black;
-  /* Imposta il colore del testo del bottone */
   border-radius: 5px;
-  /* Aggiunge un bordo arrotondato al bottone */
   cursor: pointer;
-  /* Cambia il cursore al passaggio del mouse sopra il bottone */
   transition: background-color 0.3s ease;
   font-size: 20px;
 }
 
 .lmenuButton:hover {
   background-color: #80b663;
-  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
 }
 
 .lmenuButton:disabled {
   background-color: #910018;
-  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
 }
 
 .smenuButton:disabled {
   background-color: #910018;
-  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
 }
 
 .smenuButton {
   display: inline-block;
-  /* Aggiunge un margine superiore per separare il bottone dal form */
   padding: 5px;
-  /* Aggiunge un padding al bottone */
   margin-bottom: 30px;
   width: 50%;
-  /* Imposta la larghezza del bottone al 100% */
   background-color: #e8f4fc;
-  /* Imposta il colore di sfondo del bottone */
   border: 1px solid black;
   height: 70px;
   color: black;
-  /* Imposta il colore del testo del bottone */
   border-radius: 5px;
-  /* Aggiunge un bordo arrotondato al bottone */
   cursor: pointer;
-  /* Cambia il cursore al passaggio del mouse sopra il bottone */
   transition: background-color 0.3s ease;
   font-size: 20px;
 }
 
 .smenuButton:hover {
   background-color: #8aafb4;
-  /* Cambia il colore di sfondo del bottone al passaggio del mouse */
 }
 
 #ico_container {
@@ -320,49 +341,34 @@ export default {
 
 #log_ico {
   width: 250px;
-  /* Imposta la larghezza desiderata */
   height: 250px;
-  /* Imposta l'altezza desiderata */
   border-radius: 50%;
-  /* Rende il bordo circolare */
   background-color: #e8f4fc;
-  /* Imposta il colore di sfondo bianco */
   overflow: hidden;
-  /* Assicura che l'immagine non esca dal bordo circolare */
 }
 
 #img_ico {
   width: 100%;
-  /* Riempie il contenitore */
   height: auto;
-  /* Mantieni l'aspetto proporzionato */
 }
 
 #closeButton {
   height: 70px;
   width: 70px;
   position: absolute;
-  /* Posiziona il pulsante in modo assoluto all'interno del div */
   top: 0;
-  /* Allineamento in alto */
   left: 0;
-  /* Allineamento a sinistra */
   margin: 10px;
-  /* Margine per dare spazio dal bordo */
   border: none;
   border-radius: 50%;
-  /* Rende il bordo circolare */
   overflow: hidden;
   transition: background-color 0.3s ease;
   align-content: center;
 }
 
-
 #closeButton img {
   width: 50px;
-  /* Imposta la larghezza desiderata */
   height: auto;
-  /* Mantieni l'aspetto proporzionato */
 }
 
 #login_menu {

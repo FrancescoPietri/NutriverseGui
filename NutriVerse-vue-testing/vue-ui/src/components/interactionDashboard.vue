@@ -7,8 +7,8 @@ const socket = io("wss://nutriverse.onrender.com");
 
 export default {
   name: "interactionDashboard",
-  data(){
-    return{
+  data() {
+    return {
       auth_token: "",
       saveStatusSubr: "",
       saveStatusidEmail: "",
@@ -16,33 +16,35 @@ export default {
       bool_chat: false,
       inputUrl: "",
       inputTypeP: "",
-      payloadMsg : "",
+      payloadMsg: "",
       plans: [],
       messages: [],
-    }
+    };
   },
-  components: {CardProfile, CardSchedule},
+  components: { CardProfile, CardSchedule },
   props: {
     IdMail: String,
     InteractionEmail: String,
-    Subscriber: String
+    Subscriber: String,
   },
   methods: {
     async function_query(method, uri, data) {
-      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri);
+      console.log(
+        "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
+      );
       const headers = {
         "auth-token": this.auth_token,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       };
       const response = await fetch(
-          "https://nutriverse.onrender.com/api/v1/" + uri,
-          {
-            method: method,
-            headers: headers,
-            body: JSON.stringify(data),
-            cache: "no-cache",
-          }
+        "https://nutriverse.onrender.com/api/v1/" + uri,
+        {
+          method: method,
+          headers: headers,
+          body: JSON.stringify(data),
+          cache: "no-cache",
+        },
       );
       return await response.json();
     },
@@ -52,7 +54,10 @@ export default {
     },
 
     async function_update_messages(receiver, message) {
-      return await this.function_query("POST", `messages`,  {receiver, message});
+      return await this.function_query("POST", `messages`, {
+        receiver,
+        message,
+      });
     },
 
     async function_schedule_basic(email) {
@@ -60,19 +65,28 @@ export default {
     },
 
     async function_add_schedule(clientEmail, url, type) {
-      return await this.function_query("POST", `upload`, {clientEmail, url, type} );
+      return await this.function_query("POST", `upload`, {
+        clientEmail,
+        url,
+        type,
+      });
     },
 
     async function_remove_schedule(clientEmail, type) {
-      return await this.function_query("DELETE", `upload/${clientEmail}`, {type} );
+      return await this.function_query("DELETE", `upload/${clientEmail}`, {
+        type,
+      });
     },
 
     async function_add_comment(clientEmail, type, comment) {
-      return await this.function_query("PUT", `upload/${clientEmail}`, {type, comment} );
+      return await this.function_query("PUT", `upload/${clientEmail}`, {
+        type,
+        comment,
+      });
     },
 
     async function_getChat(clientEmail) {
-      return await this.function_query("GET", `messages/${clientEmail}`,);
+      return await this.function_query("GET", `messages/${clientEmail}`);
     },
 
     back() {
@@ -86,180 +100,216 @@ export default {
       if (parts.length === 2) return parts.pop().split(";").shift();
     },
 
-    openChat(){
+    openChat() {
       this.bool_chat = !this.bool_chat;
-      if(this.bool_chat===true) {
-        socket.emit("joinRoom", {user1: this.saveStatusidEmail, user2: this.saveStatusIntEmail})
-        console.log("Joined room with users:", this.saveStatusidEmail, this.saveStatusIntEmail);
+      if (this.bool_chat === true) {
+        socket.emit("joinRoom", {
+          user1: this.saveStatusidEmail,
+          user2: this.saveStatusIntEmail,
+        });
+        console.log(
+          "Joined room with users:",
+          this.saveStatusidEmail,
+          this.saveStatusIntEmail,
+        );
 
-
-        this.function_getChat(this.saveStatusIntEmail)
-            .then(json => {
-              console.log(json)
-              this.messages = json.messages;
-            })
-
+        this.function_getChat(this.saveStatusIntEmail).then((json) => {
+          console.log(json);
+          this.messages = json.messages;
+        });
       }
     },
 
-    addSchedule(){
-      this.function_add_schedule(this.saveStatusIntEmail, this.inputUrl, this.inputTypeP)
+    addSchedule() {
+      this.function_add_schedule(
+        this.saveStatusIntEmail,
+        this.inputUrl,
+        this.inputTypeP,
+      );
     },
-    removePlan(typeP){
-      this.function_remove_schedule(this.saveStatusIntEmail, typeP)
+    removePlan(typeP) {
+      this.function_remove_schedule(this.saveStatusIntEmail, typeP);
     },
-    addComment(typeSchedule, newComment){
-      this.function_add_comment(this.saveStatusIntEmail, typeSchedule, newComment)
+    addComment(typeSchedule, newComment) {
+      this.function_add_comment(
+        this.saveStatusIntEmail,
+        typeSchedule,
+        newComment,
+      );
     },
 
     sendMessageN() {
       const messageJson = {
         senderId: this.saveStatusidEmail,
         receiverId: this.saveStatusIntEmail,
-        payload: this.payloadMsg
+        payload: this.payloadMsg,
       };
       console.log("Sending message:", messageJson);
-      socket.emit('sendMessage', messageJson);
-      this.function_update_messages(this.saveStatusIntEmail, this.payloadMsg)
+      socket.emit("sendMessage", messageJson);
+      this.function_update_messages(this.saveStatusIntEmail, this.payloadMsg);
       const msg = {
-        id : this.messages.length,
-        sender : this.saveStatusidEmail,
-        text : this.payloadMsg,
+        id: this.messages.length,
+        sender: this.saveStatusidEmail,
+        text: this.payloadMsg,
       };
       this.messages.push(msg);
     },
 
-    receiveMessage(data){
+    receiveMessage(data) {
       const msg = {
-        id : this.messages.length,
-        sender : this.saveStatusIntEmail,
-        text : data.payload.toString(),
+        id: this.messages.length,
+        sender: this.saveStatusIntEmail,
+        text: data.payload.toString(),
       };
       this.messages.push(msg);
-    }
+    },
   },
 
   created() {
-
-    socket.on("receiveMessage",(data)=>{
+    socket.on("receiveMessage", (data) => {
       console.log(data.payload);
       this.receiveMessage(data);
-    })
+    });
 
     this.auth_token = this.getCookie("auth_token");
-    if(this.Subscriber===""){
-      this.saveStatusSubr = JSON.parse(localStorage.getItem('stateSubr')) || false
-    }else{
-      this.saveStatusSubr = this.Subscriber
+    if (this.Subscriber === "") {
+      this.saveStatusSubr =
+        JSON.parse(sessionStorage.getItem("stateSubr")) || false;
+    } else {
+      this.saveStatusSubr = this.Subscriber;
     }
-    if(this.IdMail===""){
-      this.saveStatusidEmail = JSON.parse(localStorage.getItem('stateIdEmail')) || false
-    }else{
-      this.saveStatusidEmail = this.IdMail
+    if (this.IdMail === "") {
+      this.saveStatusidEmail =
+        JSON.parse(sessionStorage.getItem("stateIdEmail")) || false;
+    } else {
+      this.saveStatusidEmail = this.IdMail;
     }
-    if(this.InteractionEmail===""){
-      this.saveStatusIntEmail = JSON.parse(localStorage.getItem('stateIntEmail')) || false
-    }else{
-      this.saveStatusIntEmail = this.InteractionEmail
+    if (this.InteractionEmail === "") {
+      this.saveStatusIntEmail =
+        JSON.parse(sessionStorage.getItem("stateIntEmail")) || false;
+    } else {
+      this.saveStatusIntEmail = this.InteractionEmail;
     }
 
-    if(this.saveStatusSubr){
-        this.function_schedule_subr(this.saveStatusIntEmail)
-            .then((json) => {
-              console.log(json)
-              var tmp
-              for (tmp in json.Plans) {
-                this.plans.push(json.Plans[tmp])
-              }
-              console.log(this.plans)
-            })
-    }else {
-      this.function_schedule_basic(this.saveStatusIntEmail)
-          .then((json) => {
-            console.log(json)
-            var tmp
-            for (tmp in json.Plans) {
-              this.plans.push(json.Plans[tmp])
-            }
-            console.log(this.plans)
-          })
+    if (this.saveStatusSubr) {
+      this.function_schedule_subr(this.saveStatusIntEmail).then((json) => {
+        console.log(json);
+        var tmp;
+        for (tmp in json.Plans) {
+          this.plans.push(json.Plans[tmp]);
+        }
+        console.log(this.plans);
+      });
+    } else {
+      this.function_schedule_basic(this.saveStatusIntEmail).then((json) => {
+        console.log(json);
+        var tmp;
+        for (tmp in json.Plans) {
+          this.plans.push(json.Plans[tmp]);
+        }
+        console.log(this.plans);
+      });
     }
   },
   watch: {
-    saveStatusSubr(newVal){
-      localStorage.setItem('stateSubr', JSON.stringify(newVal));
+    saveStatusSubr(newVal) {
+      sessionStorage.setItem("stateSubr", JSON.stringify(newVal));
     },
-    saveStatusidEmail(newVal){
-      sessionStorage.setItem('stateIdEmail', JSON.stringify((newVal)));
+    saveStatusidEmail(newVal) {
+      sessionStorage.setItem("stateIdEmail", JSON.stringify(newVal));
     },
-    saveStatusIntEmail(newVal){
-      sessionStorage.setItem('stateIntEmail', JSON.stringify(newVal));
-    }
-  }
-}
+    saveStatusIntEmail(newVal) {
+      sessionStorage.setItem("stateIntEmail", JSON.stringify(newVal));
+    },
+  },
+};
 </script>
 
 <template>
   <div id="div_container_inter">
     <div id="div_upper_bar">
-
       <button id="button_back" @click="$emit('back')">
         <img id="back" src="@/assets/backArrow.png" alt="" />
       </button>
       <div id="div_int_pic">
         <div class="div_inner">
-          <img src="@/assets/defaultPIC.png"/>
+          <img src="@/assets/defaultPIC.png" />
           <span class="span_inner">{{ IdMail }}</span>
         </div>
-        <div class="div_inner"  style="margin-left: 6vh">
-          <img src="@/assets/defaultPIC.png"/>
+        <div class="div_inner" style="margin-left: 6vh">
+          <img src="@/assets/defaultPIC.png" />
           <span class="span_inner">{{ InteractionEmail }}</span>
         </div>
-        <button class="inter_button" id="but_money" >
-          <img alt="Error" src="@/assets/catIcon.png" style="width: 60%; height: 60%; background-color: transparent; border-radius: 0%" @click="openChat">
+        <button class="inter_button" id="but_money">
+          <img
+            alt="Error"
+            src="@/assets/catIcon.png"
+            style="
+              width: 60%;
+              height: 60%;
+              background-color: transparent;
+              border-radius: 0%;
+            "
+            @click="openChat"
+          />
         </button>
       </div>
 
       <div v-if="saveStatusSubr" id="addPlan">
         <div id="form_div">
-          <input v-model="inputUrl" placeholder="url of the new schedule"/>
+          <input v-model="inputUrl" placeholder="url of the new schedule" />
           <select v-model="inputTypeP">
-            <option value="" selected> type schedule </option>
-            <option value='Diet'> Diet </option>
-            <option value='Workout'> Workout </option>
+            <option value="" selected>type schedule</option>
+            <option value="Diet">Diet</option>
+            <option value="Workout">Workout</option>
           </select>
         </div>
         <button id="but_plus" class="maindash_button" @click="addSchedule">
-         <img src="@/assets/plusIcon.png" style="width: 80%; height: 80%">
+          <img src="@/assets/plusIcon.png" style="width: 80%; height: 80%" />
         </button>
       </div>
-
-
     </div>
     <div id="div_schedule">
-
-      <card-schedule v-for="p in plans"  :key="p.id" :type-schedule="p.type" :url="p.url" :comments="p.comment" :type-user="saveStatusSubr" @removePlan="removePlan" @addComment="addComment"/>
+      <card-schedule
+        v-for="p in plans"
+        :key="p.id"
+        :type-schedule="p.type"
+        :url="p.url"
+        :comments="p.comment"
+        :type-user="saveStatusSubr"
+        @removePlan="removePlan"
+        @addComment="addComment"
+      />
 
       <transition name="slide">
-          <div class="div_chat" v-if="bool_chat">
-            <div id="area_messages">
-              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.saveStatusidEmail, 'messageReceiver': mes.sender===this.saveStatusIntEmail}">
-                {{ mes.text }}
-              </div>
-            </div>
-            <div class="input-container">
-              <input id="input_chat" placeholder="write your message here!" v-model="payloadMsg">
-              <button id="button_chat" @click="sendMessageN"> > </button>
+        <div class="div_chat" v-if="bool_chat">
+          <div id="area_messages">
+            <div
+              v-for="mes in messages"
+              :key="mes.id"
+              :class="{
+                messageSender: mes.sender === this.saveStatusidEmail,
+                messageReceiver: mes.sender === this.saveStatusIntEmail,
+              }"
+            >
+              {{ mes.text }}
             </div>
           </div>
+          <div class="input-container">
+            <input
+              id="input_chat"
+              placeholder="write your message here!"
+              v-model="payloadMsg"
+            />
+            <button id="button_chat" @click="sendMessageN">></button>
+          </div>
+        </div>
       </transition>
-
     </div>
   </div>
 </template>
 
 <style scoped>
-
 #button_chat {
   border: none;
   padding: 2vh;
@@ -267,7 +317,7 @@ export default {
   cursor: pointer;
   background-color: #58a43c;
   color: white;
-  border-radius: 0 10px 10px 0 ;
+  border-radius: 0 10px 10px 0;
 }
 
 #button_chat:hover {
@@ -332,7 +382,6 @@ export default {
   border: 2px #4d8330;
 }
 
-
 #addPlan {
   display: flex;
   align-items: flex-start;
@@ -377,7 +426,7 @@ export default {
   justify-content: center;
   width: 60px;
   height: 50px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -394,7 +443,6 @@ export default {
   width: 80%;
   height: 80%;
 }
-
 
 .slide-enter-active {
   animation: slide-in 0.5s ease;
@@ -422,11 +470,10 @@ export default {
   }
 }
 
-
-.div_chat{
+.div_chat {
 }
 
-.maindash_button{
+.maindash_button {
   width: 12vh;
   height: 12vh;
   border-radius: 50%;
@@ -436,108 +483,107 @@ export default {
   overflow: hidden;
 }
 
-#but_plus{
+#but_plus {
   background-color: #b8e464;
   border: 1px solid black;
   transition: background-color 0.3s ease;
 }
 
-#but_plus:hover{
+#but_plus:hover {
   background-color: #93b650;
   cursor: pointer;
 }
 
+#div_schedule {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
+}
 
-  #div_schedule{
-    display: flex;
-    flex-wrap: wrap;
-    overflow: scroll;
-    width: 100%;
-    height: 100%;
-  }
+.inter_button {
+  background-color: transparent;
+  border: none;
+  margin-top: 3vh;
+  width: 12vh;
+  height: 12vh;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  margin-left: 8vh;
+}
 
-  .inter_button{
-    background-color: transparent;
-    border: none;
-    margin-top: 3vh;
-    width: 12vh;
-    height: 12vh;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-    margin-left: 8vh;
-  }
+.inter_button:hover {
+  background-color: #b8e464;
+  cursor: pointer;
+}
 
-  .inter_button:hover {
-    background-color: #b8e464;
-    cursor: pointer;
-  }
+.span_inner {
+  font-size: 2vh;
+  margin-top: 1vh;
+  font-family: "Stinger Fit Trial", sans-serif;
+}
 
-  .span_inner{
-    font-size: 2vh;
-    margin-top: 1vh;
-    font-family: 'Stinger Fit Trial', sans-serif;
-  }
+.div_inner {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2vh;
+  height: 100%;
+  align-items: center;
+}
 
-  .div_inner{
-    display: flex;
-    flex-direction: column;
-    margin-left: 2vh;
-    height: 100%;
-    align-items: center;
-  }
+#div_int_pic {
+  display: flex;
+  height: 70%;
+  margin-left: 10vh;
+  margin-top: 1vh;
+}
 
-  #div_int_pic{
-    display: flex;
-    height: 70%;
-    margin-left: 10vh;
-    margin-top: 1vh;
-  }
+#div_int_pic img {
+  background-color: #e8f4fc;
+  border-radius: 50%;
+  height: 100%;
+}
 
-  #div_int_pic img{
-    background-color: #e8f4fc;
-    border-radius: 50%;
-    height: 100%;
-  }
+#button_back {
+  background-color: transparent;
+  border: none;
+  margin-top: 5vh;
+  margin-left: 3vh;
+  width: 10vh;
+  height: 10vh;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
 
-  #button_back{
-    background-color: transparent;
-    border: none;
-    margin-top: 5vh;
-    margin-left: 3vh;
-    width: 10vh;
-    height: 10vh;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-  }
+#button_back:hover {
+  background-color: #b8e464;
+  cursor: pointer;
+}
 
-  #button_back:hover {
-    background-color: #b8e464;
-    cursor: pointer;
-  }
+#back {
+  margin-left: -1vh;
+  width: 80%;
+  height: 80%;
+}
 
-  #back{
-    margin-left: -1vh;
-    width: 80%;
-    height: 80%;
-  }
+#div_container_inter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
 
-  #div_container_inter{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-  }
+#div_upper_bar {
+  display: flex;
+  width: 100%;
+  height: 20vh;
+  background-color: #58a43c;
+  border-bottom: 2px solid black;
+}
 
-  #div_upper_bar{
-    display: flex;
-    width: 100%;
-    height: 20vh;
-    background-color: #58a43c;
-    border-bottom: 2px solid black;
-  }
-
-  #div_schedule{
-    width: 100%;
-    height: 79vh;
-  }
+#div_schedule {
+  width: 100%;
+  height: 79vh;
+}
 </style>

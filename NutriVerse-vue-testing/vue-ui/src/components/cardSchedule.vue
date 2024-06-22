@@ -1,70 +1,97 @@
 <script>
 export default {
   name: "cardSchedule",
-  data(){
-    return{
+  data() {
+    return {
       isExternalButtonDisabled: false,
       newComment: "",
-    }
+    };
   },
-  props:{
-    url:String,
-    typeSchedule:String,
-    comments:[],
-    typeUser: false
+  props: {
+    url: String,
+    typeSchedule: String,
+    comments: [],
+    typeUser: false,
   },
   methods: {
-    openUrl(){
-      if(!this.isExternalButtonDisabled)
-        window.open(this.url, '_blank');
+    openUrl() {
+      if (!this.isExternalButtonDisabled) window.open(this.url, "_blank");
     },
-    disableExternalButton(){
-      this.isExternalButtonDisabled=true;
+    disableExternalButton() {
+      this.isExternalButtonDisabled = true;
     },
-    enableExternalButton(){
-      this.isExternalButtonDisabled=false;
+    enableExternalButton() {
+      this.isExternalButtonDisabled = false;
     },
-    removePlan(){
+    removePlan() {
       this.$emit("removePlan", this.typeSchedule);
     },
-    addComment(){
-      this.$emit("addComment", this.typeSchedule, this.newComment)
-    }
+    addComment() {
+      this.$emit("addComment", this.typeSchedule, this.newComment);
+    },
   },
   created() {
-    console.log(this.comments)
-  }
-}
-
+    console.log(this.comments);
+  },
+};
 </script>
 
 <template>
-  <div :class="{ 'container_card_sched_diet': typeSchedule==='Diet', 'container_card_sched_WK': typeSchedule==='Workout' }" @click="openUrl" >
-    <button class="close_button" @click="removePlan" @mouseover="disableExternalButton" @mouseout="enableExternalButton">
-      <img src="@/assets/closeButton.png" style="width: 100%; height: 100%"/>
+  <div
+    :class="{
+      container_card_sched_diet: typeSchedule === 'Diet',
+      container_card_sched_WK: typeSchedule === 'Workout',
+    }"
+    @click="openUrl"
+  >
+    <button
+      class="close_button"
+      @click="removePlan"
+      @mouseover="disableExternalButton"
+      @mouseout="enableExternalButton"
+    >
+      <img src="@/assets/closeButton.png" style="width: 100%; height: 100%" />
     </button>
-    <img src="@/assets/Diet_Icon.png" v-if="typeSchedule==='Diet'" class="Schedule_img">
-    <img src="@/assets/Workout_Icon.png" v-if="typeSchedule==='Workout'" class="Schedule_img">
+    <img
+      src="@/assets/Diet_Icon.png"
+      v-if="typeSchedule === 'Diet'"
+      class="Schedule_img"
+    />
+    <img
+      src="@/assets/Workout_Icon.png"
+      v-if="typeSchedule === 'Workout'"
+      class="Schedule_img"
+    />
     <div class="comments">
       <div v-for="comment in comments" :key="comment.date" class="comment">
         {{ comment.message }}
       </div>
     </div>
     <div>
-     <input v-if="!this.typeUser" v-model="newComment" @mouseover="disableExternalButton" @mouseout="enableExternalButton" placeholder="write your comment here"/>
-     <button v-if="!this.typeUser" @mouseover="disableExternalButton" @mouseout="enableExternalButton" @click="addComment" > > </button>
+      <input
+        v-if="!this.typeUser"
+        v-model="newComment"
+        @mouseover="disableExternalButton"
+        @mouseout="enableExternalButton"
+        placeholder="write your comment here"
+      />
+      <button
+        v-if="!this.typeUser"
+        @mouseover="disableExternalButton"
+        @mouseout="enableExternalButton"
+        @click="addComment"
+      >
+        >
+      </button>
     </div>
   </div>
-  </template>
-
+</template>
 
 <style scoped>
-
-
-.close_button{
+.close_button {
   margin-left: -18vw;
   border-radius: 30%;
-  border:none;
+  border: none;
   background-color: transparent;
   width: 2vw;
   transition: background-color 0.3s ease;
