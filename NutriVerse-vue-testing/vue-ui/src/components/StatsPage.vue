@@ -1,6 +1,6 @@
 <script>
-import ProfileContainer from "@/components/ProfileContainer.vue";
-import WeightChart from "@/components/WeightChart.vue";
+import ProfileContainer from "@/components/profileContainer.vue";
+import WeightChart from "@/components/weightChart.vue";
 
 export default {
   name: "StatsPage",
@@ -22,26 +22,28 @@ export default {
 
   watch: {
     emailS(newVal) {
-      localStorage.setItem('emailS', JSON.stringify(newVal));
+      localStorage.setItem("emailS", JSON.stringify(newVal));
     },
   },
 
   methods: {
     async function_query(method, uri, data) {
-      console.log("Querying " + "https://nutriverse.onrender.com/api/v1/" + uri);
+      console.log(
+        "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
+      );
       const headers = {
         "auth-token": this.auth_token,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       };
       const response = await fetch(
-          "https://nutriverse.onrender.com/api/v1/" + uri,
-          {
-            method: method,
-            headers: headers,
-            body: JSON.stringify(data),
-            cache: "no-cache",
-          }
+        "https://nutriverse.onrender.com/api/v1/" + uri,
+        {
+          method: method,
+          headers: headers,
+          body: JSON.stringify(data),
+          cache: "no-cache",
+        },
       );
       return await response.json();
     },
@@ -66,10 +68,10 @@ export default {
   },
 
   created() {
-    if(this.email!==""){
-      this.emailS = this.email
-    }else{
-      this.emailS = JSON.parse(localStorage.getItem('emailS'));
+    if (this.email !== "") {
+      this.emailS = this.email;
+    } else {
+      this.emailS = JSON.parse(localStorage.getItem("emailS"));
     }
     this.auth_token = this.getCookie("auth_token");
     this.function_seeStats(this.emailS).then((json) => {
@@ -79,7 +81,7 @@ export default {
 
     this.function_data(this.emailS).then((json) => {
       if (json.status === 200) {
-        console.log(json)
+        console.log(json);
         const data = json.user;
         this.userN = data.name;
         this.height = data.height;
@@ -111,7 +113,7 @@ export default {
 <template>
   <div id="out_container">
     <div id="div_profile">
-    <ProfileContainer
+      <ProfileContainer
         :email="emailS"
         :typeAcc="typeAcc"
         :user-n="userN"
@@ -122,7 +124,7 @@ export default {
         :prof="prof"
         :is-stats-page="true"
         @back="back"
-    />
+      />
     </div>
     <div id="div_charts">
       <weight-chart :data="weights"></weight-chart>
@@ -131,8 +133,7 @@ export default {
 </template>
 
 <style scoped>
-
-#out_container{
+#out_container {
   display: flex;
 }
 
@@ -140,11 +141,10 @@ export default {
   flex: 0 0 30%;
 }
 
-#div_charts{
+#div_charts {
   flex: 0 0 70%;
   position: relative;
   width: 70vw;
   margin-top: 12vh;
 }
 </style>
-
