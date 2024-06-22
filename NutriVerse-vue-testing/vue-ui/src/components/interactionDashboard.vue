@@ -85,12 +85,20 @@ export default {
     },
 
     openChat(){
-      this.function_getChat(this.saveStatusIntEmail)
-          .then(json=>{
-            console.log(json)
-            this.messages=json.messages;
-          })
       this.bool_chat = !this.bool_chat;
+      if(this.bool_chat===true) {
+        socket.emit("joinRoom", {user1: this.saveStatusidEmail, user2: this.saveStatusIntEmail})
+        console.log("Joined room with users:", this.saveStatusidEmail, this.saveStatusIntEmail);
+
+        this.function_getChat(this.saveStatusIntEmail)
+            .then(json => {
+              console.log(json)
+              this.messages = json.messages;
+            })
+      }else{
+        socket.disconnect();
+        console.log("Disconnected from server");
+      }
     },
 
     addSchedule(){
@@ -146,9 +154,6 @@ export default {
     }else{
       this.saveStatusIntEmail = this.InteractionEmail
     }
-
-    socket.emit("joinRoom", {user1: this.saveStatusidEmail, user2: this.saveStatusIntEmail})
-    console.log("Joined room with users:", this.saveStatusidEmail, this.saveStatusIntEmail);
 
     socket.on("receiveMessage",(data)=>{
       console.log(data.payload);
