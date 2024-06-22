@@ -1,6 +1,9 @@
 <script>
 import CardSchedule from "@/components/cardSchedule.vue";
 import CardProfile from "@/components/cardProfile.vue";
+import io from "socket.io-client";
+
+const socket = io.connect("https://nutriverse.onrender.com/");
 
 export default {
   name: "interactionDashboard",
@@ -11,24 +14,9 @@ export default {
       bool_chat: false,
       inputUrl: "",
       inputTypeP: "",
+
       plans: [],
-      messages: [
-        { id: 1, text: 'Hello! How are you?', type: 'received' },
-        { id: 2, text: 'I am good, thanks! How about you?', type: 'sent' },
-        { id: 3, text: 'I am fine as well. What are you up to?', type: 'received' },
-        { id: 4, text: 'Just working on some projects.', type: 'sent' },
-        { id: 5, text: 'That sounds interesting!', type: 'received' },
-        { id: 6, text: 'Yes, it is. Let\'s catch up later.', type: 'sent' },
-        { id: 7, text: 'Sure, talk to you later!', type: 'received' },
-        { id: 8, text: 'Hello! How are you?', type: 'received' },
-        { id: 9, text: 'I am good, thanks! How about you?', type: 'sent' },
-        { id: 10, text: 'I am fine as well. What are you up to?', type: 'received' },
-        { id: 11, text: 'Just working on some projects.', type: 'sent' },
-        { id: 12, text: 'That sounds interesting!', type: 'received' },
-        { id: 13, text: 'Yes, it is. Let\'s catch up later.', type: 'sent' },
-        { id: 14, text: 'Sure, talk to you later!', type: 'received' },
-        { id: 15, text: 'Sure, talk to you later! pls bring pizza or mafia will kill my son this evening, ty', type: 'sent' }
-      ],
+      messages: [],
     }
   },
   components: {CardProfile, CardSchedule},
@@ -77,6 +65,10 @@ export default {
       return await this.function_query("PUT", `upload/${clientEmail}`, {type, comment} );
     },
 
+    async function_getChat(clientEmail) {
+      return await this.function_query("GET", `messages/${clientEmail}`,);
+    },
+
     back() {
       this.$emit("back");
     },
@@ -85,9 +77,16 @@ export default {
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(";").shift();
     },
+
     openChat(){
+      this.function_getChat(this.InteractionEmail)
+          .then(json=>{
+            console.log(json)
+            this.messages=json.messages;
+          })
       this.bool_chat = !this.bool_chat;
     },
+
     addSchedule(){
       this.function_add_schedule(this.InteractionEmail, this.inputUrl, this.inputTypeP)
     },
@@ -99,6 +98,22 @@ export default {
     }
   },
   created() {
+    socket.emit("joinRoom", {user1: this.IdMail, user2: this.InteractionEmail})
+
+    const sendMessage = () =>{
+      const messageJson = {
+        senderId: "john.doe@example.com",
+        receiverId: "cerkapatrick@gmail.com",
+        payload: "giggino"
+      };
+
+      socket.emit('sendMessage', messageJson);
+    }
+
+    socket.on("receiveMessage",(data)=>{
+      console.log(data.payload);
+    })
+
     this.auth_token = this.getCookie("auth_token");
     if(this.Subscriber===""){
       this.saveStatusSubr = JSON.parse(localStorage.getItem('stateSubr')) || false
@@ -179,7 +194,7 @@ export default {
       <transition name="slide">
           <div class="div_chat" v-if="bool_chat">
             <div id="area_messages">
-              <div v-for="mes in messages" :key="mes.id" :class="['message', mes.type]">
+              <div v-for="mes in messages" :key="mes.id" :class="{'messageSender': mes.sender===this.IdMail, 'messageReceiver': mes.sender===this.InteractionEmail}">
                 {{ mes.text }}
               </div>
             </div>
@@ -233,19 +248,20 @@ export default {
   background-color: #b8e464;
 }
 
-.message {
+.messageSender {
   margin: 10px 0;
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
-}
-
-.message.sent {
   background-color: #dcf8c6;
   margin-left: 15vw;
 }
 
-.message.received {
+.messageReceiver {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
   background-color: #ffffff;
   border: 1px solid #ccc;
 }
