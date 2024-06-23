@@ -157,7 +157,7 @@ export default {
         }
       }
       this.function_PayPal(typeP).then((json) => {
-        this.idPaypal = json.id;
+        localStorage.setItem("idPaypal", JSON.stringify(json.id));
         window.location.href = json.links[1].href;
       });
     },
