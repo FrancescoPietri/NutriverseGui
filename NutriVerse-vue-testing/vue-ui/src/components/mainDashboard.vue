@@ -143,6 +143,11 @@ export default {
     },
 
     async upgradePayPal() {
+      if (this.typeAcc !== 0) {
+        this.function_downgrade().then((json) => {
+          this.$emit("logout");
+        });
+      }
       localStorage.setItem("newProfession", JSON.stringify(this.newProfession));
       var typeP;
       if (
