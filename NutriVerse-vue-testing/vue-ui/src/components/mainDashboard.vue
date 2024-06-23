@@ -27,6 +27,7 @@ export default {
       expireDate: "",
       bool_chat: false,
       msgAI: "",
+      conversationHistory: "",
       professionist: [],
       patiets: [],
       requestsSub: [],
@@ -181,6 +182,10 @@ export default {
 
     openChatAI() {
       this.bool_chat = !this.bool_chat;
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+      });
     },
 
     async function_AI() {
@@ -195,10 +200,16 @@ export default {
             },
             body: JSON.stringify({
               model: "mistralai/mistral-7b-instruct:free",
-              messages: [{ role: "user", content: this.msgAI }],
+              messages: [
+                {
+                  role: "user",
+                  content: this.conversationHistory + `\nUser: ${this.msgAI}`,
+                },
+              ], // Includi lo storico come stringa
             }),
           },
         );
+        this.msgAI="";
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -211,21 +222,42 @@ export default {
     },
 
     sendMessageAi() {
+      const userMessage = `User: ${this.msgAI}`;
+
+      // Aggiungi il messaggio dell'utente allo storico della conversazione
+      this.conversationHistory += `\n${userMessage}`;
+
       const tmp = {
-        id : this.msgAiChat.length,
-        role : 'me',
-        content : this.msgAI,
-      }
-      this.msgAiChat.push(tmp)
+        id: this.msgAiChat.length,
+        role: "me",
+        content: this.msgAI,
+      };
+      this.msgAiChat.push(tmp);
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+      });
+
       this.function_AI().then((json) => {
         console.log(json);
         console.log(json.choices[0].message.content);
+
+        const aiMessage = `AI: ${json.choices[0].message.content}`;
+
+        // Aggiungi il messaggio dell'AI allo storico della conversazione
+        this.conversationHistory += `\n${aiMessage}`;
+
         const tmp = {
-          id : this.msgAiChat.length,
-          role : json.choices[0].message.role,
-          content : json.choices[0].message.content
+          id: this.msgAiChat.length,
+          role: json.choices[0].message.role,
+          content: json.choices[0].message.content,
         };
-        this.msgAiChat.push(tmp)
+        this.msgAiChat.push(tmp);
+
+        this.$nextTick(() => {
+          const container = this.$refs.messagesContainer;
+          container.scrollTop = container.scrollHeight;
+        });
       });
     },
 
@@ -397,7 +429,7 @@ export default {
     <div id="div_button_menu">
       <transition name="slideChat">
         <div class="div_chat" v-if="bool_chat">
-          <div id="area_messages">
+          <div id="area_messages" ref="messagesContainer">
             <div
               v-for="mes in msgAiChat"
               :key="mes.id"
@@ -406,7 +438,7 @@ export default {
                 messageReceiver: mes.role === 'assistant',
               }"
             >
-              {{ mes.content}}
+              {{ mes.content }}
             </div>
           </div>
           <div class="input-container">
@@ -414,6 +446,7 @@ export default {
               id="input_chat"
               placeholder="write your message here!"
               v-model="msgAI"
+              @keyup.enter="sendMessageAi"
             />
             <button id="button_chat" @click="sendMessageAi">></button>
           </div>
@@ -513,13 +546,14 @@ export default {
   padding: 2vh;
   font-size: 16px;
   cursor: pointer;
-  background-color: #58a43c;
-  color: white;
+  background-color: #ffac24;
+  color: black;
   border-radius: 0 10px 10px 0;
+  transition: background-color 0.3s ease;
 }
 
 #button_chat:hover {
-  background-color: #03750b;
+  background-color: #c8881d;
 }
 
 .div_chat {
@@ -532,7 +566,7 @@ export default {
   bottom: 0;
   width: 25vw;
   height: 60vh;
-  background-color: #b8e464;
+  background-color: #ffdc5c; /* Cambia il colore di sfondo per essere coerente con il pulsante */
   border-top: 2px solid black;
   border-left: 2px solid black;
   border-right: 2px solid black;
@@ -542,7 +576,7 @@ export default {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  background-color: #b8e464;
+  background-color: #ffdc5c; /* Cambia il colore di sfondo per essere coerente con il pulsante */
 }
 
 .messageSender {
@@ -550,8 +584,9 @@ export default {
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
-  background-color: #dcf8c6;
+  background-color: #fff5b8;
   margin-left: 10vw;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .messageReceiver {
@@ -561,6 +596,7 @@ export default {
   max-width: 60%;
   background-color: #ffffff;
   border: 1px solid #ccc;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 #input_chat {
@@ -577,8 +613,10 @@ export default {
 }
 
 #input_chat:focus {
-  border: 2px #4d8330;
+  border: 2px solid #4d8330; /* Cambia il colore del bordo per essere coerente con il pulsante */
+  outline: none; /* Rimuovi il bordo predefinito del focus */
 }
+
 
 .h1_rep_add {
   font-family: "Stinger Fit Trial", sans-serif;

@@ -102,6 +102,10 @@ export default {
 
     openChat() {
       this.bool_chat = !this.bool_chat;
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+      });
       if (this.bool_chat === true) {
         socket.emit("joinRoom", {
           user1: this.saveStatusidEmail,
@@ -153,6 +157,11 @@ export default {
         text: this.payloadMsg,
       };
       this.messages.push(msg);
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+      });
+      this.payloadMsg="";
     },
 
     receiveMessage(data) {
@@ -162,6 +171,10 @@ export default {
         text: data.payload.toString(),
       };
       this.messages.push(msg);
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+      });
     },
   },
 
@@ -283,7 +296,7 @@ export default {
 
       <transition name="slide">
         <div class="div_chat" v-if="bool_chat">
-          <div id="area_messages">
+          <div id="area_messages" ref="messagesContainer">
             <div
               v-for="mes in messages"
               :key="mes.id"
@@ -300,6 +313,7 @@ export default {
               id="input_chat"
               placeholder="write your message here!"
               v-model="payloadMsg"
+              @keyup.enter="sendMessageN"
             />
             <button id="button_chat" @click="sendMessageN">></button>
           </div>
@@ -521,7 +535,6 @@ export default {
 .span_inner {
   font-size: 2vh;
   margin-top: 1vh;
-  font-family: "Stinger Fit Trial", sans-serif;
 }
 
 .div_inner {
