@@ -25,6 +25,7 @@ export default {
     prof: "",
     email: "",
     isStatsPage: false,
+    expireDate: String,
   },
   methods: {
     async function_query(method, uri, data) {
@@ -116,12 +117,15 @@ export default {
       prof_work: typeAcc === 2,
     }"
   >
+    <div style="display: flex">
     <div id="div_logo">
       <img
         alt="Error"
         style="width: 100%; height: 100%"
         src="@/assets/NutriverseLogo.png"
       />
+    </div>
+    <h4 style="margin-left: 15vw" v-if="typeAcc!==0">Expires: {{expireDate}}</h4>
     </div>
     <div id="div_logut_pic">
       <div id="div_logout">

@@ -24,7 +24,8 @@ export default {
       auth_token: null,
       isAdding: false,
       isReporting: false,
-
+      expireDate: "",
+      bool_chat: false,
       professionist: [],
       patiets: [],
       requestsSub: [],
@@ -108,6 +109,10 @@ export default {
       return await this.function_query_post("POST", `paypal/${idp}`);
     },
 
+    async function_endSub() {
+      return await this.function_query("GET", `endSubscription`);
+    },
+
     logout() {
       this.$emit("logout");
     },
@@ -172,6 +177,10 @@ export default {
       this.function_report(this.textReport);
     },
 
+    openChatAI(){
+      this.bool_chat=!this.bool_chat;
+    },
+
     changePlan() {
       if (this.typeAcc === 0) {
         this.function_upgrade(this.newProfession).then((json) => {
@@ -194,10 +203,23 @@ export default {
   },
   created() {
     this.auth_token = this.getCookie("auth_token");
+
+    let expires = new Date();
+    expires.setTime(expires.getTime());
+    console.log(expires)
+
+    this.function_endSub()
+        .then(json=>{
+          if(json.message==="Subscription ended"){
+            this.changePlan()
+          }
+        })
+
     this.function_data().then((json) => {
       if (json.status === 200) {
         console.log(json);
         const data = json.user;
+        this.expireDate = data.subscriptionEndDate;
         this.userN = data.name;
         this.height = data.height;
         this.age = data.age;
@@ -272,6 +294,7 @@ export default {
       :height="height"
       :weight="weight"
       :prof="prof"
+      :expire-date="expireDate"
       @logout="logout"
       @openStats="openStats"
     />
@@ -325,6 +348,32 @@ export default {
     </div>
 
     <div id="div_button_menu">
+
+      <transition name="slideChat">
+        <div class="div_chat" v-if="bool_chat">
+          <div id="area_messages">
+            <div
+                v-for="mes in messages"
+                :key="mes.id"
+                :class="{
+                messageSender: mes.sender === this.saveStatusidEmail,
+                messageReceiver: mes.sender === this.saveStatusIntEmail,
+              }"
+            >
+              {{ mes.text }}
+            </div>
+          </div>
+          <div class="input-container">
+            <input
+                id="input_chat"
+                placeholder="write your message here!"
+                v-model="payloadMsg"
+            />
+            <button id="button_chat" @click="sendMessageN">></button>
+          </div>
+        </div>
+      </transition>
+
       <transition name="slide">
         <div
           :class="{
@@ -362,7 +411,7 @@ export default {
         </div>
       </transition>
 
-      <button class="maindash_button" id="but_money" v-if="typeAcc !== 0">
+      <button class="maindash_button" id="but_money" v-if="typeAcc !== 0" @click="openChatAI">
         <img
           alt="Error"
           src="@/assets/catIcon.png"
@@ -408,12 +457,111 @@ export default {
 </template>
 
 <style scoped>
+
+#button_chat {
+  border: none;
+  padding: 2vh;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #58a43c;
+  color: white;
+  border-radius: 0 10px 10px 0;
+}
+
+#button_chat:hover {
+  background-color: #03750b;
+}
+
+.div_chat {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  position: fixed;
+  right: 40vw;
+  bottom: 0;
+  width: 25vw;
+  height: 60vh;
+  background-color: #b8e464;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
+#area_messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #b8e464;
+}
+
+.messageSender {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  background-color: #dcf8c6;
+  margin-left: 15vw;
+}
+
+.messageReceiver {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+}
+
+#input_chat {
+  border: none;
+  padding: 2vh;
+  font-size: 16px;
+  width: 86%;
+  box-sizing: border-box;
+  border-top: 1px solid #ccc;
+  border-radius: 10px 0 0 10px;
+  margin-bottom: 1vh;
+  margin-left: 1vh;
+  margin-top: 1vh;
+}
+
+#input_chat:focus {
+  border: 2px #4d8330;
+}
+
 .h1_rep_add {
   font-family: "Stinger Fit Trial", sans-serif;
 }
 
 #inter_div {
   margin-left: 1.5vw;
+}
+
+.slideChat-enter-active {
+  animation: slide-in-chat 0.5s ease;
+}
+
+.slideChat-leave-active {
+  animation: slide-out-chat 0.5s ease;
+}
+
+@keyframes slide-in-chat {
+  from {
+    transform: translateY(120%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-out-chat {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(120%);
+  }
 }
 
 .slide-enter-active {
