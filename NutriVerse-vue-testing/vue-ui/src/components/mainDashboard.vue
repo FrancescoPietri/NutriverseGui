@@ -13,7 +13,7 @@ export default {
       userN: "",
       weight: "",
       height: "",
-      idPaypal:"",
+      idPaypal: "",
       age: Number,
       gender: "",
       prof: "",
@@ -101,7 +101,11 @@ export default {
     },
 
     async function_PayPal(productType) {
-      return await this.function_query_post("POST", "paypal", { productType })
+      return await this.function_query_post("POST", "paypal", { productType });
+    },
+
+    async function_PayPal_Approve() {
+      return await this.function_query_post("POST", `paypal/${this.idPaypal}`);
     },
 
     logout() {
@@ -138,29 +142,24 @@ export default {
       this.isAdding = false;
     },
 
-    async upgradePayPal(){
+    async upgradePayPal() {
       var typeP;
-      if(this.newProfession==="Nutritionist" || this.newProfession==="Personal Trainer"){
-        typeP="Professionist";
-      }else{
-        typeP="Premium";
+      if (
+        this.newProfession === "Nutritionist" ||
+        this.newProfession === "Personal Trainer"
+      ) {
+        typeP = "Professionist";
+      } else {
+        if (this.newProfession === "") {
+          return;
+        } else {
+          typeP = "Premium";
+        }
       }
-      this.function_PayPal(typeP)
-          .then(json=>{
-            this.idPaypal = json.id;
-            const headers = {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-            };
-            const response = fetch(
-                json.links[1].href,
-                {
-                  method: "GET",
-                  headers: headers,
-                  cache: "no-cache",
-                },
-            );
-          })
+      this.function_PayPal(typeP).then((json) => {
+        this.idPaypal = json.id;
+        window.location.href = json.links[1].href;
+      });
     },
 
     sendReport() {
@@ -228,6 +227,16 @@ export default {
         alert("error:" + json.status);
       }
     });
+    const urlParams = new URLSearchParams(window.location.search);
+    const PayerID = urlParams.get("PayerID") || "";
+    if(PayerID!==""){
+      this.function_PayPal_Approve()
+          .then(json=>{
+            if(json.status==="COMPLETED"){
+              this.changePlan();
+            }
+          })
+    }
   },
   props: {
     IdCode: String,
@@ -382,12 +391,11 @@ export default {
 </template>
 
 <style scoped>
-
-.h1_rep_add{
+.h1_rep_add {
   font-family: "Stinger Fit Trial", sans-serif;
 }
 
-#inter_div{
+#inter_div {
   margin-left: 1.5vw;
 }
 
