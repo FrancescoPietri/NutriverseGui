@@ -6,6 +6,7 @@
 
 <script>
 import { Line } from "vue-chartjs";
+import { Chart } from 'chart.js/auto'
 import {
   Chart as ChartJS,
   Title,
