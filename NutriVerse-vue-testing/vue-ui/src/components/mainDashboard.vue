@@ -13,12 +13,14 @@ export default {
       userN: "",
       weight: "",
       height: "",
+      idPaypal:"",
       age: Number,
       gender: "",
       prof: "",
       newProfession: "",
       typeAcc: 4,
       email: "",
+      textReport: "",
       auth_token: null,
       isAdding: false,
       isReporting: false,
@@ -70,6 +72,10 @@ export default {
       return await response.json();
     },
 
+    async function_report(text) {
+      return await this.function_query_post("POST", "report", { text });
+    },
+
     async function_upgrade(Profession) {
       return await this.function_query_post("POST", "prouser", { Profession });
     },
@@ -92,6 +98,10 @@ export default {
 
     async function_addSubReq(email) {
       return await this.function_query_post("POST", "subscription", { email });
+    },
+
+    async function_PayPal(productType) {
+      return await this.function_query_post("POST", "paypal", { productType })
     },
 
     logout() {
@@ -126,6 +136,35 @@ export default {
     openReport() {
       this.isReporting = !this.isReporting;
       this.isAdding = false;
+    },
+
+    async upgradePayPal(){
+      var typeP;
+      if(this.newProfession==="Nutritionist" || this.newProfession==="Personal Trainer"){
+        typeP="Professionist";
+      }else{
+        typeP="Premium";
+      }
+      this.function_PayPal(typeP)
+          .then(json=>{
+            this.idPaypal = json.id;
+            const headers = {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            };
+            const response = fetch(
+                json.links[1].href,
+                {
+                  method: "GET",
+                  headers: headers,
+                  cache: "no-cache",
+                },
+            );
+          })
+    },
+
+    sendReport() {
+      this.function_report(this.textReport);
     },
 
     changePlan() {
@@ -260,7 +299,6 @@ export default {
     </div>
 
     <div id="div_button_menu">
-
       <transition name="slide">
         <div
           :class="{
@@ -269,33 +307,32 @@ export default {
           }"
           v-if="isAdding || isReporting"
         >
-          <input
-            v-model="addSubr"
-            class="input_email"
-            placeholder="Insert here the email of the professionist to subscribe"
-            v-if="isAdding"
-          />
-          <button id="button_email" @click="sendSubRequest" v-if="isAdding">
-            >
-          </button>
-
-          <div class="div_input_email" v-if="isReporting">
+          <div style="width: 100%" id="inter_div">
+            <h1 v-if="isAdding" class="h1_rep_add">Add Subscription</h1>
             <input
               v-model="addSubr"
               class="input_email"
-              placeholder="Insert the email of the user that you want to report"
-              v-if="isReporting"
+              placeholder="Insert here the email of the professionist to subscribe"
+              v-if="isAdding"
             />
+            <button id="button_email" @click="sendSubRequest" v-if="isAdding">
+              >
+            </button>
+            <h1 v-if="isReporting" class="h1_rep_add">Send a Report</h1>
             <input
-              v-model="addSubr"
               class="input_email"
               placeholder="Description"
               v-if="isReporting"
+              v-model="textReport"
             />
-          </div>
-          <button id="button_email_report" @click="" v-if="isReporting">
+            <button
+              id="button_email_report"
+              @click="sendReport"
+              v-if="isReporting"
             >
-          </button>
+              >
+            </button>
+          </div>
         </div>
       </transition>
 
@@ -312,7 +349,7 @@ export default {
         <option value="Personal Trainer">Personal Trainer</option>
         <option value="Premium User">Premium user</option>
       </select>
-      <button class="maindash_button" id="but_money" @click="changePlan">
+      <button class="maindash_button" id="but_money" @click="upgradePayPal">
         <img
           alt="Error"
           src="@/assets/dollarIcon.png"
@@ -345,6 +382,15 @@ export default {
 </template>
 
 <style scoped>
+
+.h1_rep_add{
+  font-family: "Stinger Fit Trial", sans-serif;
+}
+
+#inter_div{
+  margin-left: 1.5vw;
+}
+
 .slide-enter-active {
   animation: slide-in 0.5s ease;
 }
@@ -373,28 +419,28 @@ export default {
 
 #button_email {
   width: 2vw;
-  padding: 5px;
+  padding: 10px;
   margin-top: auto;
   margin-bottom: auto;
   margin-right: auto;
   background-color: #45a049;
   transition: background-color 0.3s ease;
-  border-radius: 0 10px 10px 0 ;
+  border-radius: 0 10px 10px 0;
 }
 
 #button_email:hover {
   background-color: #007a07;
 }
 
-#button_email_report  {
+#button_email_report {
   width: 2vw;
-  padding: 21px;
+  padding: 10px;
   margin-top: auto;
   margin-bottom: auto;
-  margin-left: -3.4vw;
+  margin-right: auto;
   background-color: #850000;
   transition: background-color 0.3s ease;
-  border-radius: 0 10px 10px 0 ;
+  border-radius: 0 10px 10px 0;
 }
 
 #button_email_report:hover {
@@ -406,8 +452,8 @@ export default {
   margin-top: auto;
   margin-bottom: auto;
   margin-left: auto;
-  font-size: 14px;
-  padding: 5px;
+  font-size: 16px;
+  padding: 10px;
 }
 
 .div_input_email {
