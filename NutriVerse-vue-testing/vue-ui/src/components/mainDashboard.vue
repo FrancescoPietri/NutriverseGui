@@ -104,8 +104,8 @@ export default {
       return await this.function_query_post("POST", "paypal", { productType });
     },
 
-    async function_PayPal_Approve() {
-      return await this.function_query_post("POST", `paypal/${this.idPaypal}`);
+    async function_PayPal_Approve(idp) {
+      return await this.function_query_post("POST", `paypal/${idp}`);
     },
 
     logout() {
@@ -230,7 +230,8 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     const PayerID = urlParams.get("PayerID") || "";
     if(PayerID!==""){
-      this.function_PayPal_Approve()
+      console.log(this.idPaypal)
+      this.function_PayPal_Approve(this.idPaypal)
           .then(json=>{
             if(json.status==="COMPLETED"){
               this.changePlan();
