@@ -24,6 +24,7 @@ export default {
       auth_token: null,
       isAdding: false,
       isReporting: false,
+      isUpgrading: false,
       expireDate: "",
       bool_chat: false,
       msgAI: "",
@@ -143,11 +144,19 @@ export default {
     openAddSub() {
       this.isAdding = !this.isAdding;
       this.isReporting = false;
+      this.isUpgrading = false;
     },
 
     openReport() {
       this.isReporting = !this.isReporting;
       this.isAdding = false;
+      this.isUpgrading = false;
+    },
+
+    openUpgrade() {
+      this.isUpgrading = !this.isUpgrading;
+      this.isAdding = false;
+      this.isReporting = false;
     },
 
     async upgradePayPal() {
@@ -209,7 +218,7 @@ export default {
             }),
           },
         );
-        this.msgAI="";
+        this.msgAI = "";
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -458,11 +467,12 @@ export default {
           :class="{
             insEmail: isAdding === true,
             insEmailReport: isReporting === true,
+            insUpgrade: isUpgrading === true,
           }"
-          v-if="isAdding || isReporting"
+          v-if="isAdding || isReporting || isUpgrading"
         >
           <div style="width: 100%" id="inter_div">
-            <h1 v-if="isAdding" class="h1_rep_add">Add Subscription</h1>
+            <h1 v-if="isAdding" class="h1_rep_add">Add Subscription!</h1>
             <input
               v-model="addSubr"
               class="input_email"
@@ -472,7 +482,8 @@ export default {
             <button id="button_email" @click="sendSubRequest" v-if="isAdding">
               >
             </button>
-            <h1 v-if="isReporting" class="h1_rep_add">Send a Report</h1>
+
+            <h1 v-if="isReporting" class="h1_rep_add">Send a Report!</h1>
             <input
               class="input_email"
               placeholder="Description"
@@ -486,6 +497,41 @@ export default {
             >
               >
             </button>
+
+            <h1 v-if="isUpgrading" class="h1_rep_add">Change Your Plan!</h1>
+            <select
+              class="input_upgrade"
+              v-model="newProfession"
+              v-if="typeAcc === 0 && isUpgrading"
+            >
+              <option value="" disabled selected></option>
+              <option value="Nutritionist">Nutritionist</option>
+              <option value="Personal Trainer">Personal Trainer</option>
+              <option value="Premium User">Premium user</option>
+            </select>
+            <div style="display: flex" v-if="typeAcc !== 0">
+              <h1 v-if="isUpgrading && typeAcc !== 0">Downgrade:</h1>
+              <button
+                id="button_sendUpgrade"
+                @click="upgradePayPal"
+                v-if="isUpgrading && typeAcc === 0"
+              >
+                >
+              </button>
+              <button
+                style="
+                  font-size: 40px;
+                  padding-right: 45px;
+                  border-radius: 10px 10px 10px 10px;
+                  margin-left: 1vw;
+                "
+                id="button_sendUpgrade"
+                @click="changePlan"
+                v-if="isUpgrading && typeAcc !== 0"
+              >
+                ⬇
+              </button>
+            </div>
           </div>
         </div>
       </transition>
@@ -502,13 +548,7 @@ export default {
           style="width: 80%; height: 80%"
         />
       </button>
-      <select v-model="newProfession" v-if="typeAcc === 0">
-        <option value="" disabled selected></option>
-        <option value="Nutritionist">Nutritionist</option>
-        <option value="Personal Trainer">Personal Trainer</option>
-        <option value="Premium User">Premium user</option>
-      </select>
-      <button class="maindash_button" id="but_money" @click="upgradePayPal">
+      <button class="maindash_button" id="but_money" @click="openUpgrade">
         <img
           alt="Error"
           src="@/assets/dollarIcon.png"
@@ -617,7 +657,6 @@ export default {
   outline: none; /* Rimuovi il bordo predefinito del focus */
 }
 
-
 .h1_rep_add {
   font-family: "Stinger Fit Trial", sans-serif;
 }
@@ -662,7 +701,7 @@ export default {
 
 @keyframes slide-in {
   from {
-    transform: translateX(120%);
+    transform: translateX(150%);
   }
   to {
     transform: translateX(0);
@@ -674,7 +713,7 @@ export default {
     transform: translateX(0);
   }
   to {
-    transform: translateX(120%);
+    transform: translateX(150%);
   }
 }
 
@@ -708,6 +747,30 @@ export default {
   background-color: #430000;
 }
 
+#button_sendUpgrade {
+  width: 2vw;
+  padding: 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: auto;
+  background-color: #ffac24;
+  transition: background-color 0.3s ease;
+  border-radius: 0 10px 10px 0;
+}
+
+#button_sendUpgrade:hover {
+  background-color: #b1771b;
+}
+
+.input_upgrade {
+  width: 86%;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  font-size: 16px;
+  padding: 10px;
+}
+
 .input_email {
   width: 80%;
   margin-top: auto;
@@ -723,11 +786,22 @@ export default {
   margin-left: 2vw;
 }
 
+.insUpgrade {
+  display: flex;
+  align-content: center;
+  position: relative;
+  margin-bottom: 4vh;
+  background-color: #ffdc5c;
+  width: 23vw;
+  height: 20vh;
+  border-radius: 10px;
+  border: 2px solid black;
+}
+
 .insEmail {
   display: flex;
   align-content: center;
   position: relative;
-  left: +20%;
   margin-bottom: 4vh;
   background-color: #b0e464;
   width: 23vw;
@@ -740,7 +814,6 @@ export default {
   display: flex;
   align-content: center;
   position: relative;
-  left: +20%;
   margin-bottom: 4vh;
   background-color: #cf1f02;
   width: 23vw;
