@@ -1,6 +1,6 @@
 <script>
 import ProfileContainer from "@/components/profileContainer.vue";
-import WeightChart from "@/components/weightChart.vue";
+import WeightChart from "@/components/WeightChart.vue";
 
 export default {
   name: "StatsPage",
@@ -99,7 +99,7 @@ export default {
           if (data.Profession === "Premium User") {
             this.typeAcc = 1;
           } else {
-            this.typeAcc = 1;
+            this.typeAcc = 0;
           }
         }
       }
