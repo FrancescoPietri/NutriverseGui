@@ -512,13 +512,6 @@ export default {
             <div style="display: flex" v-if="typeAcc !== 0">
               <h1 v-if="isUpgrading && typeAcc !== 0">Downgrade:</h1>
               <button
-                id="button_sendUpgrade"
-                @click="upgradePayPal"
-                v-if="isUpgrading && typeAcc === 0"
-              >
-                >
-              </button>
-              <button
                 style="
                   font-size: 40px;
                   padding-right: 45px;
@@ -532,6 +525,13 @@ export default {
                 ⬇
               </button>
             </div>
+            <button
+              id="button_sendUpgrade"
+              @click="upgradePayPal"
+              v-if="isUpgrading && typeAcc === 0"
+            >
+              >
+            </button>
           </div>
         </div>
       </transition>
