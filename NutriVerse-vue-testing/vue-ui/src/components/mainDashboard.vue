@@ -26,9 +26,11 @@ export default {
       isReporting: false,
       expireDate: "",
       bool_chat: false,
+      msgAI: "",
       professionist: [],
       patiets: [],
       requestsSub: [],
+      msgAiChat: [],
     };
   },
   methods: {
@@ -177,8 +179,54 @@ export default {
       this.function_report(this.textReport);
     },
 
-    openChatAI(){
-      this.bool_chat=!this.bool_chat;
+    openChatAI() {
+      this.bool_chat = !this.bool_chat;
+    },
+
+    async function_AI() {
+      try {
+        const response = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer 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`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "mistralai/mistral-7b-instruct:free",
+              messages: [{ role: "user", content: this.msgAI }],
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+
+    sendMessageAi() {
+      const tmp = {
+        id : this.msgAiChat.length,
+        role : 'me',
+        content : this.msgAI,
+      }
+      this.msgAiChat.push(tmp)
+      this.function_AI().then((json) => {
+        console.log(json);
+        console.log(json.choices[0].message.content);
+        const tmp = {
+          id : this.msgAiChat.length,
+          role : json.choices[0].message.role,
+          content : json.choices[0].message.content
+        };
+        this.msgAiChat.push(tmp)
+      });
     },
 
     changePlan() {
@@ -206,14 +254,13 @@ export default {
 
     let expires = new Date();
     expires.setTime(expires.getTime());
-    console.log(expires)
+    console.log(expires);
 
-    this.function_endSub()
-        .then(json=>{
-          if(json.message==="Subscription ended"){
-            this.changePlan()
-          }
-        })
+    this.function_endSub().then((json) => {
+      if (json.message === "Subscription ended") {
+        this.changePlan();
+      }
+    });
 
     this.function_data().then((json) => {
       if (json.status === 200) {
@@ -348,28 +395,27 @@ export default {
     </div>
 
     <div id="div_button_menu">
-
       <transition name="slideChat">
         <div class="div_chat" v-if="bool_chat">
           <div id="area_messages">
             <div
-                v-for="mes in messages"
-                :key="mes.id"
-                :class="{
-                messageSender: mes.sender === this.saveStatusidEmail,
-                messageReceiver: mes.sender === this.saveStatusIntEmail,
+              v-for="mes in msgAiChat"
+              :key="mes.id"
+              :class="{
+                messageSender: mes.role === 'me',
+                messageReceiver: mes.role === 'assistant',
               }"
             >
-              {{ mes.text }}
+              {{ mes.content}}
             </div>
           </div>
           <div class="input-container">
             <input
-                id="input_chat"
-                placeholder="write your message here!"
-                v-model="payloadMsg"
+              id="input_chat"
+              placeholder="write your message here!"
+              v-model="msgAI"
             />
-            <button id="button_chat" @click="sendMessageN">></button>
+            <button id="button_chat" @click="sendMessageAi">></button>
           </div>
         </div>
       </transition>
@@ -411,7 +457,12 @@ export default {
         </div>
       </transition>
 
-      <button class="maindash_button" id="but_money" v-if="typeAcc !== 0" @click="openChatAI">
+      <button
+        class="maindash_button"
+        id="but_money"
+        v-if="typeAcc !== 0"
+        @click="openChatAI"
+      >
         <img
           alt="Error"
           src="@/assets/catIcon.png"
@@ -457,7 +508,6 @@ export default {
 </template>
 
 <style scoped>
-
 #button_chat {
   border: none;
   padding: 2vh;
@@ -501,7 +551,7 @@ export default {
   border-radius: 10px;
   max-width: 60%;
   background-color: #dcf8c6;
-  margin-left: 15vw;
+  margin-left: 10vw;
 }
 
 .messageReceiver {
