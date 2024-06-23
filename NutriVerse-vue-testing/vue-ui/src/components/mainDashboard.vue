@@ -158,7 +158,6 @@ export default {
       }
       this.function_PayPal(typeP).then((json) => {
         this.idPaypal = json.id;
-        console.log(this.idPaypal)
         window.location.href = json.links[1].href;
       });
     },
@@ -178,6 +177,11 @@ export default {
         });
       }
     },
+    watch: {
+      idPaypal(newVal) {
+        sessionStorage.setItem("idPaypal", JSON.stringify(newVal));
+      },
+    }
   },
   created() {
     this.auth_token = this.getCookie("auth_token");
@@ -228,6 +232,8 @@ export default {
         alert("error:" + json.status);
       }
     });
+    this.idPaypal =
+        JSON.parse(sessionStorage.getItem("idPaypal")) || "";
     const urlParams = new URLSearchParams(window.location.search);
     const PayerID = urlParams.get("PayerID") || "";
     if(PayerID!==""){
