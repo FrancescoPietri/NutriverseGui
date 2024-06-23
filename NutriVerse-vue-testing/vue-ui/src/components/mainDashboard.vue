@@ -143,6 +143,7 @@ export default {
     },
 
     async upgradePayPal() {
+      localStorage.setItem("newProfession", JSON.stringify(this.newProfession));
       var typeP;
       if (
         this.newProfession === "Nutritionist" ||
