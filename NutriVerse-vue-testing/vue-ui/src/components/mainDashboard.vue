@@ -181,7 +181,10 @@ export default {
       idPaypal(newVal) {
         localStorage.setItem("idPaypal", JSON.stringify(newVal));
       },
-    }
+      newProfession(newVal) {
+        localStorage.setItem("newProfession", JSON.stringify(newVal));
+      },
+    },
   },
   created() {
     this.auth_token = this.getCookie("auth_token");
@@ -232,18 +235,18 @@ export default {
         alert("error:" + json.status);
       }
     });
-    this.idPaypal =
-        JSON.parse(localStorage.getItem("idPaypal")) || "";
+    this.idPaypal = JSON.parse(localStorage.getItem("idPaypal")) || "";
+    this.newProfession =
+      JSON.parse(localStorage.getItem("newProfession")) || "";
     const urlParams = new URLSearchParams(window.location.search);
     const PayerID = urlParams.get("PayerID") || "";
-    if(PayerID!==""){
-      console.log(this.idPaypal)
-      this.function_PayPal_Approve(this.idPaypal)
-          .then(json=>{
-            if(json.status==="COMPLETED"){
-              this.changePlan();
-            }
-          })
+    if (PayerID !== "") {
+      console.log(this.idPaypal);
+      this.function_PayPal_Approve(this.idPaypal).then((json) => {
+        if (json.status === "COMPLETED") {
+          this.changePlan();
+        }
+      });
     }
   },
   props: {
