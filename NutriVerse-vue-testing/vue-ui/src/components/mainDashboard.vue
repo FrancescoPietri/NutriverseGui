@@ -179,7 +179,7 @@ export default {
     },
     watch: {
       idPaypal(newVal) {
-        sessionStorage.setItem("idPaypal", JSON.stringify(newVal));
+        localStorage.setItem("idPaypal", JSON.stringify(newVal));
       },
     }
   },
@@ -233,7 +233,7 @@ export default {
       }
     });
     this.idPaypal =
-        JSON.parse(sessionStorage.getItem("idPaypal")) || "";
+        JSON.parse(localStorage.getItem("idPaypal")) || "";
     const urlParams = new URLSearchParams(window.location.search);
     const PayerID = urlParams.get("PayerID") || "";
     if(PayerID!==""){
