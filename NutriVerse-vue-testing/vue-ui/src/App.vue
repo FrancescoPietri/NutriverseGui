@@ -98,7 +98,7 @@ export default {
     this.statsPage = JSON.parse(sessionStorage.getItem("statsPage")) || false;
 
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
+    const token = urlParams.get("token_email");
     if (token) {
       this.auth_token = token;
       let expires = new Date();
