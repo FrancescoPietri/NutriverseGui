@@ -158,6 +158,7 @@ export default {
       }
       this.function_PayPal(typeP).then((json) => {
         this.idPaypal = json.id;
+        console.log(this.idPaypal)
         window.location.href = json.links[1].href;
       });
     },
