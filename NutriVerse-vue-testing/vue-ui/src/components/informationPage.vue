@@ -6,16 +6,6 @@ export default {
   data() {
     return {
       displayLogin: false,
-      ptText:
-        "Introducing Nutriverse, the ultimate platform designed exclusively for personal trainers seeking seamless client interaction. In the dynamic world of fitness, where personalized guidance and constant communication are paramount, Nutriverse stands out as the perfect solution for professionals like you.\n" +
-        "\n" +
-        "Imagine having a comprehensive toolkit at your fingertips, crafted to elevate your practice and revolutionize the way you connect with your clients. With Nutriverse, bid farewell to cumbersome paperwork and scattered communication channels. Our intuitive interface consolidates all client data, ensuring it's readily accessible whenever and wherever you need it.\n" +
-        "\n" +
-        "But Nutriverse offers far more than just streamlined data management. It's your virtual training partner, empowering you to forge deeper connections with your clients. Engage in real-time conversations, share tailored workout plans, monitor progress, and celebrate achievements together—all within a secure and user-friendly environment.\n" +
-        "\n" +
-        "What truly sets Nutriverse apart is its commitment to innovation. We're constantly evolving to meet the ever-changing needs of personal trainers and their clients. From cutting-edge analytics tools to customizable training templates, we provide the resources you need to stay ahead in a competitive industry.\n" +
-        "\n" +
-        "Join the Nutriverse community today and experience the difference firsthand. Elevate your training practice, strengthen client relationships, and unlock new opportunities with Nutriverse—the ultimate platform for personal trainers who demand excellence.\n",
       nText:
         "Welcome to Nutriverse, the ultimate solution tailored specifically for nutritionists seeking seamless client interaction. In the dynamic world of nutrition, where personalized guidance and constant communication are key, Nutriverse stands out as the ideal platform for professionals like you.\n" +
         "\n" +
@@ -73,7 +63,30 @@ export default {
         />
       </div>
       <div id="div_pt">
-        <span v-text="ptText"></span>
+        <h2>Welcome to Nutriverse</h2>
+        <p>
+          Unlock the full potential of your health and fitness journey with Nutriverse,
+          your ultimate destination for personalized nutrition and training schedules.
+          Designed by leading nutritionists and personal trainers, our platform provides
+          you with expert-crafted plans tailored to your unique needs and goals.
+        </p>
+        <p>
+          At Nutriverse, we believe in the power of personalized guidance. Whether you're
+          aiming to build muscle, lose weight, improve your endurance, or simply lead a
+          healthier lifestyle, our professionals have created schedules that ensure you
+          achieve optimal results. With Nutriverse, you gain access to:
+        </p>
+        <ul>
+          <li><b>Custom Nutrition Plans</b>: Diets curated by top nutritionists to fuel your body the right way.</li>
+          <li><b>Expert Training Programs</b>: Workouts designed by personal trainers to maximize your performance and efficiency.</li>
+          <li><b>Integrated Chat</b>: stay in touch with your Nutritionist or Personal Trainer thanks to a fast and reliable chat!</li>
+          <li><b>AI Support</b>: Upgrade to premium or professional to get access to a personalize AI Chatbot!</li>
+        </ul>
+        <p>
+          Start your journey towards a healthier, fitter you with Nutriverse today. Discover the science
+          of nutrition and the art of training, and watch as your goals become reality.
+        </p>
+        <h3>Welcome to a new universe of health and fitness. Welcome to Nutriverse.</h3>
       </div>
       <div class="c_img_inf">
         <img
@@ -83,19 +96,62 @@ export default {
         />
       </div>
       <div id="div_n">
-        <span v-text="nText"></span>
+        <h2>Our Plans</h2>
+        <table id="table_plan">
+          <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Price (year)</th>
+            <th>Features</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>Premium Basic</td>
+            <td>60€</td>
+            <td>Grant access to AI chat bot</td>
+          </tr>
+          <tr>
+            <td>Professional</td>
+            <td>240€</td>
+            <td>Grant access to AI chat bot and the Nutritionist/Personal Trainer title</td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+#table_plan th, #table_plan td {
+  border: 1px solid black;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+#table_plan th {
+  background-color: #58a43c;
+  color: #134300;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+#table_plan tr{
+  background-color: white;
+}
+
+#table_plan td {
+  color: black;
+}
+
 .c_img_inf {
   display: flex;
   width: 10vh;
   height: 10vh;
   margin-top: 5vh;
-  margin-left: 10vh;
+  margin-left: 5vh;
+  margin-right: 5vh;
 }
 
 .slide-enter-active {
@@ -125,7 +181,7 @@ export default {
 }
 
 #button_ham:hover #hamlogin {
-  content: url("@/assets/ham1.png"); /* Sostituisce l'immagine al passaggio del mouse */
+  content: url("@/assets/ham1.png");
   cursor: pointer;
 }
 
@@ -145,16 +201,25 @@ export default {
   display: flex;
   height: 70vh;
   font-size: 20px;
-  justify-content: space-around; /* Distribute space around */
+  justify-content: space-around;
 }
 
-#div_pt,
 #div_n {
   width: 35%;
   height: 70%;
   text-align: justify;
-  margin-top: 15vh;
+  margin-top: 5vh;
   margin-right: 15vh;
+  font-size: 25px;
+}
+
+#div_pt{
+  width: 35%;
+  height: 70%;
+  text-align: justify;
+  margin-top: 5vh;
+  margin-right: 15vh;
+  font-size: 18px;
 }
 
 #div_title {

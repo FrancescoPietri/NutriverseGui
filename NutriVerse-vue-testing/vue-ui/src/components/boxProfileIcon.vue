@@ -8,6 +8,7 @@ export default {
   props: {
     email: "",
     auth_token: "",
+    typeAcc: "",
   },
 };
 </script>
@@ -15,9 +16,25 @@ export default {
 <template>
   <div id="div_pic">
     <img
+      v-if="typeAcc === 0"
       alt="Error"
       id="img_pic"
       src="@/assets/defaultPIC.png"
+      @click.right="openStats"
+    />
+    <img
+      v-if="typeAcc === 1"
+      alt="Error"
+      id="img_pic"
+      src="@/assets/defaultPIC.png"
+      @click.right="openStats"
+    />
+    <img
+      v-if="typeAcc === 2"
+      alt="Error"
+      id="img_pic"
+      src="@/assets/Pro_Icon.png"
+      style="border: 4px solid black"
       @click.right="openStats"
     />
   </div>

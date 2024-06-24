@@ -27,7 +27,9 @@ export default {
       this.$emit("removePlan", this.typeSchedule);
     },
     addComment() {
+      this.comments.push({message: this.newComment, date: new Date()})
       this.$emit("addComment", this.typeSchedule, this.newComment);
+      this.newComment=""
     },
   },
   created() {
@@ -62,20 +64,28 @@ export default {
       v-if="typeSchedule === 'Workout'"
       class="Schedule_img"
     />
-    <div class="comments">
+    <div class="comments_d" v-if="typeSchedule === 'Diet'">
       <div v-for="comment in comments" :key="comment.date" class="comment">
         {{ comment.message }}
       </div>
     </div>
-    <div>
+    <div class="comments_w" v-if="typeSchedule === 'Workout'">
+      <div v-for="comment in comments" :key="comment.date" class="comment">
+        {{ comment.message }}
+      </div>
+    </div>
+    <div v-if="!typeUser" class="div_in_com">
       <input
+        style="font-size: 18px; border-radius: 5px 0 0 5px"
         v-if="!this.typeUser"
         v-model="newComment"
         @mouseover="disableExternalButton"
         @mouseout="enableExternalButton"
         placeholder="write your comment here"
+        @keydown.enter="addComment"
       />
       <button
+          style="font-size: 18px; border-radius: 0 5px 5px 0; background-color: white"
         v-if="!this.typeUser"
         @mouseover="disableExternalButton"
         @mouseout="enableExternalButton"
@@ -88,6 +98,11 @@ export default {
 </template>
 
 <style scoped>
+.div_in_com {
+  position: fixed;
+  margin-top: 58vh;
+}
+
 .close_button {
   margin-left: -18vw;
   border-radius: 30%;
@@ -138,11 +153,32 @@ export default {
   background-color: #63c8ff;
 }
 
-.comments {
+.comments_d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 30vh;
+  height: 20vh;
   margin-top: 2vh;
   text-align: left;
+  overflow: scroll;
+  align-content: center;
+  background-color: #fae7b9;
+  border-radius: 10px;
+}
+
+.comments_w {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 20vh;
+  margin-top: 2vh;
+  text-align: left;
+  overflow: scroll;
+  align-content: center;
+  background-color: #bae8fd;
+  border-radius: 10px;
 }
 
 .comment {
@@ -151,5 +187,6 @@ export default {
   padding: 1vh;
   margin-bottom: 1vh;
   border-radius: 5px;
+  width: 75%;
 }
 </style>

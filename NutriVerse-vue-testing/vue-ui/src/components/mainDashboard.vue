@@ -24,6 +24,7 @@ export default {
       auth_token: null,
       isAdding: false,
       isReporting: false,
+      isUpgrading: false,
       expireDate: "",
       bool_chat: false,
       msgAI: "",
@@ -35,7 +36,18 @@ export default {
     };
   },
   methods: {
+
+    isTokenExpired() {
+      const authToken = this.getCookie("auth_token");
+      return !(authToken);
+    },
+
     async function_query(method, uri) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
       );
@@ -56,6 +68,11 @@ export default {
     },
 
     async function_query_post(method, uri, data) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
       );
@@ -134,20 +151,37 @@ export default {
 
     sendSubRequest() {
       this.function_addSubReq(this.addSubr);
+      this.professionist = []
+      this.patiets = []
+      this.requestsSub = []
+      this.getProfileData();
     },
 
     openStats(email, auth_token) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       this.$emit("openStats", email, auth_token);
     },
 
     openAddSub() {
       this.isAdding = !this.isAdding;
       this.isReporting = false;
+      this.isUpgrading = false;
     },
 
     openReport() {
       this.isReporting = !this.isReporting;
       this.isAdding = false;
+      this.isUpgrading = false;
+    },
+
+    openUpgrade() {
+      this.isUpgrading = !this.isUpgrading;
+      this.isAdding = false;
+      this.isReporting = false;
     },
 
     async upgradePayPal() {
@@ -209,7 +243,7 @@ export default {
             }),
           },
         );
-        this.msgAI="";
+        this.msgAI = "";
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -272,13 +306,97 @@ export default {
         });
       }
     },
-    watch: {
-      idPaypal(newVal) {
-        localStorage.setItem("idPaypal", JSON.stringify(newVal));
-      },
-      newProfession(newVal) {
-        localStorage.setItem("newProfession", JSON.stringify(newVal));
-      },
+
+    getProfileData(){
+      this.patiets = []
+      this.professionist = []
+      this.requestsSub = []
+      this.function_data().then((json) => {
+        if (json.status === 200) {
+          console.log(json);
+          const data = json.user;
+          this.expireDate = data.subscriptionEndDate;
+          this.userN = data.name;
+          this.height = data.height;
+          this.age = data.age;
+          this.gender = data.gender;
+          this.email = data.email;
+          if (data.weight.length > 0) {
+            this.weight = data.weight[data.weight.length - 1].value;
+          }
+          if (data.userType === "ProUser") {
+            if (data.Profession !== "Premium User") {
+              this.prof = data.Profession;
+              this.typeAcc = 2;
+            } else {
+              this.typeAcc = 1;
+            }
+          } else {
+            this.typeAcc = 0;
+          }
+          var tmp = 0;
+          this.function_subscription().then((json) => {
+            if (json.status === 200) {
+              for (tmp in json.subscriptions.subscriptions) {
+                this.professionist.push(json.subscriptions.subscriptions[tmp]);
+              }
+            }
+          });
+          if (this.typeAcc === 2) {
+            this.function_subscriber().then((json) => {
+              if (json.status === 200) {
+                console.log(json);
+                for (tmp in json.subscribers) {
+                  this.patiets.push(json.subscribers[tmp]);
+                }
+                for (tmp in json.requests) {
+                  this.requestsSub.push(json.requests[tmp]);
+                }
+              }
+            });
+          }
+        } else {
+          alert("error:" + json.status);
+        }
+      });
+    },
+
+    updateData(){
+
+      this.function_data().then((json) => {
+        if (json.status === 200) {
+          console.log(json);
+          const data = json.user;
+          this.expireDate = data.subscriptionEndDate;
+          this.userN = data.name;
+          this.height = data.height;
+          this.age = data.age;
+          this.gender = data.gender;
+          this.email = data.email;
+          if (data.weight.length > 0) {
+            this.weight = data.weight[data.weight.length - 1].value;
+          }
+          if (data.userType === "ProUser") {
+            if (data.Profession !== "Premium User") {
+              this.prof = data.Profession;
+              this.typeAcc = 2;
+            } else {
+              this.typeAcc = 1;
+            }
+          } else {
+            this.typeAcc = 0;
+          }
+        }
+      })
+    },
+  },
+
+  watch: {
+    idPaypal(newVal) {
+      localStorage.setItem("idPaypal", JSON.stringify(newVal));
+    },
+    newProfession(newVal) {
+      localStorage.setItem("newProfession", JSON.stringify(newVal));
     },
   },
   created() {
@@ -294,54 +412,8 @@ export default {
       }
     });
 
-    this.function_data().then((json) => {
-      if (json.status === 200) {
-        console.log(json);
-        const data = json.user;
-        this.expireDate = data.subscriptionEndDate;
-        this.userN = data.name;
-        this.height = data.height;
-        this.age = data.age;
-        this.gender = data.gender;
-        this.email = data.email;
-        if (data.weight.length > 0) {
-          this.weight = data.weight[data.weight.length - 1].value;
-        }
-        if (data.userType === "ProUser") {
-          if (data.Profession !== "Premium User") {
-            this.prof = data.Profession;
-            this.typeAcc = 2;
-          } else {
-            this.typeAcc = 1;
-          }
-        } else {
-          this.typeAcc = 0;
-        }
-        var tmp = 0;
-        this.function_subscription().then((json) => {
-          if (json.status === 200) {
-            for (tmp in json.subscriptions.subscriptions) {
-              this.professionist.push(json.subscriptions.subscriptions[tmp]);
-            }
-          }
-        });
-        if (this.typeAcc === 2) {
-          this.function_subscriber().then((json) => {
-            if (json.status === 200) {
-              console.log(json);
-              for (tmp in json.subscribers) {
-                this.patiets.push(json.subscribers[tmp]);
-              }
-              for (tmp in json.requests) {
-                this.requestsSub.push(json.requests[tmp]);
-              }
-            }
-          });
-        }
-      } else {
-        alert("error:" + json.status);
-      }
-    });
+    this.getProfileData()
+
     this.idPaypal = JSON.parse(localStorage.getItem("idPaypal")) || "";
     this.newProfession =
       JSON.parse(localStorage.getItem("newProfession")) || "";
@@ -376,6 +448,7 @@ export default {
       :expire-date="expireDate"
       @logout="logout"
       @openStats="openStats"
+      @updateData="updateData"
     />
     <div id="div_profile_space"></div>
 
@@ -397,6 +470,7 @@ export default {
             :name-p="pro.name"
             :email="pro.email"
             :type-p="pro.profession"
+            @removeSub="getProfileData"
             @openInteractionDashboard="openInteractionDashboard"
           />
         </div>
@@ -417,11 +491,12 @@ export default {
             :name-p="pro.name"
             :email="pro.email"
             :type-p="pro.profession"
+            @removeSub="getProfileData"
             @openInteractionDashboard="openInteractionDashboardSubr"
           />
         </div>
         <div v-for="pro in requestsSub" :key="pro.email" class="card_div">
-          <cardProfileReq :email="pro.email" :auth_token="auth_token" />
+          <cardProfileReq :email="pro.email" :auth_token="auth_token" @reloadReq="getProfileData"/>
         </div>
       </div>
     </div>
@@ -458,11 +533,12 @@ export default {
           :class="{
             insEmail: isAdding === true,
             insEmailReport: isReporting === true,
+            insUpgrade: isUpgrading === true,
           }"
-          v-if="isAdding || isReporting"
+          v-if="isAdding || isReporting || isUpgrading"
         >
           <div style="width: 100%" id="inter_div">
-            <h1 v-if="isAdding" class="h1_rep_add">Add Subscription</h1>
+            <h1 v-if="isAdding" class="h1_rep_add">Add Subscription!</h1>
             <input
               v-model="addSubr"
               class="input_email"
@@ -472,7 +548,8 @@ export default {
             <button id="button_email" @click="sendSubRequest" v-if="isAdding">
               >
             </button>
-            <h1 v-if="isReporting" class="h1_rep_add">Send a Report</h1>
+
+            <h1 v-if="isReporting" class="h1_rep_add">Send a Report!</h1>
             <input
               class="input_email"
               placeholder="Description"
@@ -483,6 +560,43 @@ export default {
               id="button_email_report"
               @click="sendReport"
               v-if="isReporting"
+            >
+              >
+            </button>
+
+            <h1 v-if="isUpgrading" class="h1_rep_add">Change Your Plan!</h1>
+            <select
+              class="input_upgrade"
+              v-model="newProfession"
+              v-if="typeAcc === 0 && isUpgrading"
+            >
+              <option value="" disabled selected></option>
+              <option value="Nutritionist">Nutritionist</option>
+              <option value="Personal Trainer">Personal Trainer</option>
+              <option value="Premium User">Premium user</option>
+            </select>
+
+            <div style="display: flex" v-if="typeAcc !== 0">
+              <h1 v-if="isUpgrading && typeAcc !== 0">Downgrade:</h1>
+              <button
+                style="
+                  font-size: 40px;
+                  padding-right: 45px;
+                  border-radius: 10px 10px 10px 10px;
+                  margin-left: 1vw;
+                "
+                id="button_sendUpgrade"
+                @click="changePlan"
+                v-if="isUpgrading && typeAcc !== 0"
+              >
+                ⬇
+              </button>
+            </div>
+
+            <button
+              id="button_sendUpgrade"
+              @click="upgradePayPal"
+              v-if="isUpgrading && typeAcc === 0"
             >
               >
             </button>
@@ -498,17 +612,11 @@ export default {
       >
         <img
           alt="Error"
-          src="@/assets/catIcon.png"
-          style="width: 80%; height: 80%"
+          src="@/assets/AI_chat_icon.png"
+          style="width: 80%; height: 80%; margin-left: 5px"
         />
       </button>
-      <select v-model="newProfession" v-if="typeAcc === 0">
-        <option value="" disabled selected></option>
-        <option value="Nutritionist">Nutritionist</option>
-        <option value="Personal Trainer">Personal Trainer</option>
-        <option value="Premium User">Premium user</option>
-      </select>
-      <button class="maindash_button" id="but_money" @click="upgradePayPal">
+      <button class="maindash_button" id="but_money" @click="openUpgrade">
         <img
           alt="Error"
           src="@/assets/dollarIcon.png"
@@ -617,7 +725,6 @@ export default {
   outline: none; /* Rimuovi il bordo predefinito del focus */
 }
 
-
 .h1_rep_add {
   font-family: "Stinger Fit Trial", sans-serif;
 }
@@ -662,7 +769,7 @@ export default {
 
 @keyframes slide-in {
   from {
-    transform: translateX(120%);
+    transform: translateX(150%);
   }
   to {
     transform: translateX(0);
@@ -674,7 +781,7 @@ export default {
     transform: translateX(0);
   }
   to {
-    transform: translateX(120%);
+    transform: translateX(150%);
   }
 }
 
@@ -708,6 +815,30 @@ export default {
   background-color: #430000;
 }
 
+#button_sendUpgrade {
+  width: 2vw;
+  padding: 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: auto;
+  background-color: #ffac24;
+  transition: background-color 0.3s ease;
+  border-radius: 0 10px 10px 0;
+}
+
+#button_sendUpgrade:hover {
+  background-color: #b1771b;
+}
+
+.input_upgrade {
+  width: 86%;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  font-size: 16px;
+  padding: 10px;
+}
+
 .input_email {
   width: 80%;
   margin-top: auto;
@@ -723,11 +854,22 @@ export default {
   margin-left: 2vw;
 }
 
+.insUpgrade {
+  display: flex;
+  align-content: center;
+  position: relative;
+  margin-bottom: 4vh;
+  background-color: #ffdc5c;
+  width: 23vw;
+  height: 20vh;
+  border-radius: 10px;
+  border: 2px solid black;
+}
+
 .insEmail {
   display: flex;
   align-content: center;
   position: relative;
-  left: +20%;
   margin-bottom: 4vh;
   background-color: #b0e464;
   width: 23vw;
@@ -740,7 +882,6 @@ export default {
   display: flex;
   align-content: center;
   position: relative;
-  left: +20%;
   margin-bottom: 4vh;
   background-color: #cf1f02;
   width: 23vw;
