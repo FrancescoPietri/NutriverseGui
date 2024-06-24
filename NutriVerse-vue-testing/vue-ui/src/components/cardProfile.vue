@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       isExternalButtonDisabled: false,
+      typeAcc: "",
     };
   },
   props: {
@@ -46,6 +47,7 @@ export default {
 
     removeSub() {
       this.function_remove(this.email);
+      this.$emit("removeSub")
     },
     openInteractionDashboard() {
       this.$emit("openInteractionDashboard", this.email);
@@ -58,6 +60,13 @@ export default {
       this.isExternalButtonDisabled = false;
     },
   },
+  created(){
+    if(this.typeP === "B"){
+      this.typeAcc=0;
+    }else{
+      this.typeAcc=2;
+    }
+  }
 };
 </script>
 
@@ -78,6 +87,7 @@ export default {
       </button>
       <box-profile-icon
         :email="email"
+        :type-acc="typeAcc"
         style="width: 8.3vw"
         @openStats="openStats"
       />

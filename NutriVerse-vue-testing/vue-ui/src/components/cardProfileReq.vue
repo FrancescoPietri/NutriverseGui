@@ -34,10 +34,10 @@ export default {
       });
     },
     acceptRequest() {
-      this.function_accept(this.email, true);
+      this.function_accept(this.email, true).then(json=>{this.$emit("reloadReq")});
     },
     refuseRequest() {
-      this.function_accept(this.email, false);
+      this.function_accept(this.email, false).then(json=>{this.$emit("reloadReq")});
     },
   },
 };
@@ -66,6 +66,19 @@ export default {
 </template>
 
 <style scoped>
+
+.selReq{
+  background-color: white;
+  transition: background-color 0.3s ease;
+  width: 80px;
+  height: 35px;
+}
+
+.selReq:hover{
+  background-color: #c4adef;
+  cursor: pointer;
+}
+
 .button_card_profile {
   background-color: transparent;
   border: none;

@@ -308,6 +308,9 @@ export default {
     },
 
     getProfileData(){
+      this.patiets = []
+      this.professionist = []
+      this.requestsSub = []
       this.function_data().then((json) => {
         if (json.status === 200) {
           console.log(json);
@@ -467,6 +470,7 @@ export default {
             :name-p="pro.name"
             :email="pro.email"
             :type-p="pro.profession"
+            @removeSub="getProfileData"
             @openInteractionDashboard="openInteractionDashboard"
           />
         </div>
@@ -487,11 +491,12 @@ export default {
             :name-p="pro.name"
             :email="pro.email"
             :type-p="pro.profession"
+            @removeSub="getProfileData"
             @openInteractionDashboard="openInteractionDashboardSubr"
           />
         </div>
         <div v-for="pro in requestsSub" :key="pro.email" class="card_div">
-          <cardProfileReq :email="pro.email" :auth_token="auth_token" />
+          <cardProfileReq :email="pro.email" :auth_token="auth_token" @reloadReq="getProfileData"/>
         </div>
       </div>
     </div>
@@ -607,8 +612,8 @@ export default {
       >
         <img
           alt="Error"
-          src="@/assets/catIcon.png"
-          style="width: 80%; height: 80%"
+          src="@/assets/AI_chat_icon.png"
+          style="width: 80%; height: 80%; margin-left: 5px"
         />
       </button>
       <button class="maindash_button" id="but_money" @click="openUpgrade">

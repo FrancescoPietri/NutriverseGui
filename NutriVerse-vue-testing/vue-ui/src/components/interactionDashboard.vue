@@ -144,10 +144,31 @@ export default {
         this.saveStatusIntEmail,
         this.inputUrl,
         this.inputTypeP,
-      );
+      ).then(json=>{
+        this.function_schedule_subr(this.saveStatusIntEmail).then((json) => {
+          this.plans=[]
+          console.log(json);
+          var tmp;
+          for (tmp in json.Plans) {
+            this.plans.push(json.Plans[tmp]);
+          }
+          console.log(this.plans);
+        });
+      });
+
     },
     removePlan(typeP) {
-      this.function_remove_schedule(this.saveStatusIntEmail, typeP);
+      this.function_remove_schedule(this.saveStatusIntEmail, typeP).then(json=>{
+        this.function_schedule_subr(this.saveStatusIntEmail).then((json) => {
+          this.plans=[]
+          console.log(json);
+          var tmp;
+          for (tmp in json.Plans) {
+            this.plans.push(json.Plans[tmp]);
+          }
+          console.log(this.plans);
+        });
+      });
     },
 
     addComment(typeSchedule, newComment) {
@@ -262,11 +283,13 @@ export default {
       </button>
       <div id="div_int_pic">
         <div class="div_inner">
-          <img src="@/assets/defaultPIC.png" />
+          <img src="@/assets/Pro_Icon.png" style="border: 4px solid black" v-if="Subscriber"/>
+          <img src="@/assets/defaultPIC.png" style="border: 4px solid black" v-if="!Subscriber"/>
           <span class="span_inner">{{ IdMail }}</span>
         </div>
         <div class="div_inner" style="margin-left: 6vh">
-          <img src="@/assets/defaultPIC.png" />
+          <img src="@/assets/Pro_Icon.png" style="border: 4px solid black" v-if="!Subscriber"/>
+          <img src="@/assets/defaultPIC.png" style="border: 4px solid black" v-if="Subscriber"/>
           <span class="span_inner">{{ InteractionEmail }}</span>
         </div>
         <button class="inter_button" id="but_money">

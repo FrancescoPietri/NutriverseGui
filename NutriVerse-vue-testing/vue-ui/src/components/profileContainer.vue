@@ -141,7 +141,7 @@ export default {
           src="@/assets/NutriverseLogo.png"
         />
       </div>
-      <h4 style="margin-left: 15vw" v-if="typeAcc !== 0">
+      <h4 style="margin-left: 15vw" v-if="typeAcc !== 0 && !isStatsPage">
         Expires: {{ expireDate }}
       </h4>
     </div>
@@ -173,6 +173,7 @@ export default {
       <box-profile-icon
         :email="this.email"
         :auth_token="this.auth_token"
+        :type-acc="typeAcc"
         @openStats="openStats"
       ></box-profile-icon>
 
