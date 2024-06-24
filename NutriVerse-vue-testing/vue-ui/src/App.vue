@@ -67,6 +67,8 @@ export default {
     },
     logout() {
       this.logged = false;
+      this.interacting = false;
+      this.signUp = false;
       document.cookie =
         "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       sessionStorage.clear();
@@ -134,8 +136,14 @@ export default {
     :InteractionEmail="interactionCode"
     :Subscriber="boolSubr"
     @back="exitInteraction"
+    @logout="logout"
   />
-  <stats-page v-if="statsPage" :email="email" @back="exitInteraction" />
+  <stats-page
+    v-if="statsPage"
+    :email="email"
+    @back="exitInteraction"
+    @logout="logout"
+  />
 </template>
 
 <style>

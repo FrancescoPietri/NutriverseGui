@@ -36,7 +36,18 @@ export default {
     };
   },
   methods: {
+
+    isTokenExpired() {
+      const authToken = this.getCookie("auth_token");
+      return !(authToken);
+    },
+
     async function_query(method, uri) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
       );
@@ -57,6 +68,11 @@ export default {
     },
 
     async function_query_post(method, uri, data) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
       );
@@ -138,6 +154,11 @@ export default {
     },
 
     openStats(email, auth_token) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       this.$emit("openStats", email, auth_token);
     },
 
@@ -281,13 +302,13 @@ export default {
         });
       }
     },
-    watch: {
-      idPaypal(newVal) {
-        localStorage.setItem("idPaypal", JSON.stringify(newVal));
-      },
-      newProfession(newVal) {
-        localStorage.setItem("newProfession", JSON.stringify(newVal));
-      },
+  },
+  watch: {
+    idPaypal(newVal) {
+      localStorage.setItem("idPaypal", JSON.stringify(newVal));
+    },
+    newProfession(newVal) {
+      localStorage.setItem("newProfession", JSON.stringify(newVal));
     },
   },
   created() {
@@ -509,6 +530,7 @@ export default {
               <option value="Personal Trainer">Personal Trainer</option>
               <option value="Premium User">Premium user</option>
             </select>
+
             <div style="display: flex" v-if="typeAcc !== 0">
               <h1 v-if="isUpgrading && typeAcc !== 0">Downgrade:</h1>
               <button
@@ -525,6 +547,7 @@ export default {
                 ⬇
               </button>
             </div>
+
             <button
               id="button_sendUpgrade"
               @click="upgradePayPal"

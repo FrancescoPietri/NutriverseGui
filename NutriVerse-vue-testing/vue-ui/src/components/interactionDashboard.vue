@@ -28,7 +28,22 @@ export default {
     Subscriber: String,
   },
   methods: {
+
+    logout(){
+      this.$emit("logout")
+    },
+
+    isTokenExpired() {
+      const authToken = this.getCookie("auth_token");
+      return !(authToken);
+    },
+
     async function_query(method, uri, data) {
+      if(this.isTokenExpired()){
+        alert("Session Expired! please login again")
+        this.logout();
+        return
+      }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
       );
