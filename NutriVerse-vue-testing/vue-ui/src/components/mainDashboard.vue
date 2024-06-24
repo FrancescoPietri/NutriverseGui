@@ -151,6 +151,10 @@ export default {
 
     sendSubRequest() {
       this.function_addSubReq(this.addSubr);
+      this.professionist = []
+      this.patiets = []
+      this.requestsSub = []
+      this.getProfileData();
     },
 
     openStats(email, auth_token) {
@@ -302,7 +306,88 @@ export default {
         });
       }
     },
+
+    getProfileData(){
+      this.function_data().then((json) => {
+        if (json.status === 200) {
+          console.log(json);
+          const data = json.user;
+          this.expireDate = data.subscriptionEndDate;
+          this.userN = data.name;
+          this.height = data.height;
+          this.age = data.age;
+          this.gender = data.gender;
+          this.email = data.email;
+          if (data.weight.length > 0) {
+            this.weight = data.weight[data.weight.length - 1].value;
+          }
+          if (data.userType === "ProUser") {
+            if (data.Profession !== "Premium User") {
+              this.prof = data.Profession;
+              this.typeAcc = 2;
+            } else {
+              this.typeAcc = 1;
+            }
+          } else {
+            this.typeAcc = 0;
+          }
+          var tmp = 0;
+          this.function_subscription().then((json) => {
+            if (json.status === 200) {
+              for (tmp in json.subscriptions.subscriptions) {
+                this.professionist.push(json.subscriptions.subscriptions[tmp]);
+              }
+            }
+          });
+          if (this.typeAcc === 2) {
+            this.function_subscriber().then((json) => {
+              if (json.status === 200) {
+                console.log(json);
+                for (tmp in json.subscribers) {
+                  this.patiets.push(json.subscribers[tmp]);
+                }
+                for (tmp in json.requests) {
+                  this.requestsSub.push(json.requests[tmp]);
+                }
+              }
+            });
+          }
+        } else {
+          alert("error:" + json.status);
+        }
+      });
+    },
+
+    updateData(){
+
+      this.function_data().then((json) => {
+        if (json.status === 200) {
+          console.log(json);
+          const data = json.user;
+          this.expireDate = data.subscriptionEndDate;
+          this.userN = data.name;
+          this.height = data.height;
+          this.age = data.age;
+          this.gender = data.gender;
+          this.email = data.email;
+          if (data.weight.length > 0) {
+            this.weight = data.weight[data.weight.length - 1].value;
+          }
+          if (data.userType === "ProUser") {
+            if (data.Profession !== "Premium User") {
+              this.prof = data.Profession;
+              this.typeAcc = 2;
+            } else {
+              this.typeAcc = 1;
+            }
+          } else {
+            this.typeAcc = 0;
+          }
+        }
+      })
+    },
   },
+
   watch: {
     idPaypal(newVal) {
       localStorage.setItem("idPaypal", JSON.stringify(newVal));
@@ -324,54 +409,8 @@ export default {
       }
     });
 
-    this.function_data().then((json) => {
-      if (json.status === 200) {
-        console.log(json);
-        const data = json.user;
-        this.expireDate = data.subscriptionEndDate;
-        this.userN = data.name;
-        this.height = data.height;
-        this.age = data.age;
-        this.gender = data.gender;
-        this.email = data.email;
-        if (data.weight.length > 0) {
-          this.weight = data.weight[data.weight.length - 1].value;
-        }
-        if (data.userType === "ProUser") {
-          if (data.Profession !== "Premium User") {
-            this.prof = data.Profession;
-            this.typeAcc = 2;
-          } else {
-            this.typeAcc = 1;
-          }
-        } else {
-          this.typeAcc = 0;
-        }
-        var tmp = 0;
-        this.function_subscription().then((json) => {
-          if (json.status === 200) {
-            for (tmp in json.subscriptions.subscriptions) {
-              this.professionist.push(json.subscriptions.subscriptions[tmp]);
-            }
-          }
-        });
-        if (this.typeAcc === 2) {
-          this.function_subscriber().then((json) => {
-            if (json.status === 200) {
-              console.log(json);
-              for (tmp in json.subscribers) {
-                this.patiets.push(json.subscribers[tmp]);
-              }
-              for (tmp in json.requests) {
-                this.requestsSub.push(json.requests[tmp]);
-              }
-            }
-          });
-        }
-      } else {
-        alert("error:" + json.status);
-      }
-    });
+    this.getProfileData()
+
     this.idPaypal = JSON.parse(localStorage.getItem("idPaypal")) || "";
     this.newProfession =
       JSON.parse(localStorage.getItem("newProfession")) || "";
@@ -406,6 +445,7 @@ export default {
       :expire-date="expireDate"
       @logout="logout"
       @openStats="openStats"
+      @updateData="updateData"
     />
     <div id="div_profile_space"></div>
 

@@ -28,17 +28,16 @@ export default {
     expireDate: String,
   },
   methods: {
-
     isTokenExpired() {
       const authToken = this.getCookie("auth_token");
-      return !(authToken);
+      return !authToken;
     },
 
     async function_query(method, uri, data) {
-      if(this.isTokenExpired()){
-        alert("Session Expired! please login again")
+      if (this.isTokenExpired()) {
+        alert("Session Expired! please login again");
         this.logout();
-        return
+        return;
       }
       console.log(
         "Querying " + "https://nutriverse.onrender.com/api/v1/" + uri,
@@ -114,6 +113,12 @@ export default {
         this.genderU,
       );
       alert(response.message);
+      this.nameU="";
+      this.weightU="";
+      this.ageU="";
+      this.heightU="";
+      this.genderU="";
+      this.$emit("updateData")
     },
   },
 };
@@ -129,14 +134,16 @@ export default {
     }"
   >
     <div style="display: flex">
-    <div id="div_logo">
-      <img
-        alt="Error"
-        style="width: 100%; height: 100%"
-        src="@/assets/NutriverseLogo.png"
-      />
-    </div>
-    <h4 style="margin-left: 15vw" v-if="typeAcc!==0">Expires: {{expireDate}}</h4>
+      <div id="div_logo">
+        <img
+          alt="Error"
+          style="width: 100%; height: 100%"
+          src="@/assets/NutriverseLogo.png"
+        />
+      </div>
+      <h4 style="margin-left: 15vw" v-if="typeAcc !== 0">
+        Expires: {{ expireDate }}
+      </h4>
     </div>
     <div id="div_logut_pic">
       <div id="div_logout">

@@ -69,7 +69,7 @@ export default {
 .button_card_profile {
   background-color: transparent;
   border: none;
-  height: 33vh;
+  height: 35vh;
 }
 
 .close_button {
