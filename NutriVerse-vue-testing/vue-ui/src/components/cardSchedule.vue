@@ -27,7 +27,9 @@ export default {
       this.$emit("removePlan", this.typeSchedule);
     },
     addComment() {
+      this.comments.push({message: this.newComment, date: new Date()})
       this.$emit("addComment", this.typeSchedule, this.newComment);
+      this.newComment=""
     },
   },
   created() {

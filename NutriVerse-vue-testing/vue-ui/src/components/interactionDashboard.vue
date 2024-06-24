@@ -155,17 +155,7 @@ export default {
         this.saveStatusIntEmail,
         typeSchedule,
         newComment,
-      ).then(json=>{
-        this.plans = []
-        this.function_schedule_basic(this.saveStatusIntEmail).then((json) => {
-          console.log(json);
-          var tmp;
-          for (tmp in json.Plans) {
-            this.plans.push(json.Plans[tmp]);
-          }
-          console.log(this.plans);
-        });
-      });
+      )
     },
 
     sendMessageN() {
