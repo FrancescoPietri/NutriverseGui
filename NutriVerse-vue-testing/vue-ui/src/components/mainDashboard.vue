@@ -229,7 +229,7 @@ export default {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer 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`,
+              Authorization: `Bearer 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`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
